@@ -1,0 +1,17 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="AppTheme" parent="AppTheme.Base"/>
+
+    <style name="AppTheme.Base" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+
+        <!-- Colored status bar for KitKat -->
+        <!-- name="android:windowTranslucentStatus" tools:targetApi="19">@color/colorPrimary</item>
+        <item name="android:fitsSystemWindows" tools:targetApi="19">true</item-->
+    </style>
+
+</resources>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:minHeight="58dp"
+    android:padding="0dp" >
+
+    <CheckBox
+        android:id="@+id/checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Test Checkbox"
+        android:textSize="18sp"
+        android:fontFamily="sans-serif-medium"
+        android:padding="16dp"
+
+        android:drawableLeft="@drawable/checkbox_selector_red"
+        android:drawablePadding="@dimen/checkboxPadding"
+        android:checked="true"
+
+        android:button="@null"
+        android:background="@android:color/transparent"/>
+    <!-- Hax to support left margin on checkbox -->
+
+</RelativeLayout>

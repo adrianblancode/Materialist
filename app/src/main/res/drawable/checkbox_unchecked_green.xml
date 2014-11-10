@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <corners
+        android:radius="@dimen/checkboxRadius"/>
+
+    <size
+        android:height="@dimen/checkboxSize"
+        android:width="@dimen/checkboxSize"/>
+
+    <solid/>
+
+    <stroke
+        android:width="@dimen/checkboxBorder"
+        android:color="@color/checkboxGreen"/>
+
+    <padding
+        android:left="@dimen/checkboxPadding"
+        android:top="@dimen/checkboxPadding"
+        android:right="@dimen/checkboxPadding"
+        android:bottom="@dimen/checkboxPadding"/>
+</shape>

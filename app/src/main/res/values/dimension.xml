@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="checkboxSize">23dp</dimen>
+    <dimen name="checkboxRadius">3dp</dimen>
+    <dimen name="checkboxBorder">2.5dp</dimen>
+    <dimen name="checkboxPadding">16dp</dimen>
+</resources>
