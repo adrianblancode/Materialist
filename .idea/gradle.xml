@@ -12,6 +12,8 @@
             <option value="$PROJECT_DIR$/libraries" />
             <option value="$PROJECT_DIR$/libraries/FloatingActionButton" />
             <option value="$PROJECT_DIR$/libraries/FloatingActionButton/library" />
+            <option value="$PROJECT_DIR$/libraries/material-dialogs" />
+            <option value="$PROJECT_DIR$/libraries/material-dialogs/library" />
           </set>
         </option>
       </GradleProjectSettings>

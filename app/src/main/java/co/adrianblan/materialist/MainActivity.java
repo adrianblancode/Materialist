@@ -1,6 +1,8 @@
 package co.adrianblan.materialist;
 
+import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -18,6 +20,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -31,6 +34,7 @@ import java.util.Map;
 public class MainActivity extends ActionBarActivity{
 
     private Toolbar toolbar;
+    FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +51,7 @@ public class MainActivity extends ActionBarActivity{
         }
 
         ListView listView = (ListView) findViewById(R.id.listview);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.attachToListView(listView);
     }
 
@@ -55,24 +59,34 @@ public class MainActivity extends ActionBarActivity{
         ArrayList results = new ArrayList();
 
         ListItem li = new ListItem();
-        li.setText("Team Snapchat");
+        li.setText("Buy milk");
         li.setColor(ListItem.Color.RED);
         results.add(li);
 
         li = new ListItem();
-        li.setText("This is a list");
+        li.setText("Homework");
         li.setColor(ListItem.Color.BLUE);
         results.add(li);
 
         li = new ListItem();
-        li.setText("Check me!");
+        li.setText("Watch Breaking Bad");
         li.setColor(ListItem.Color.GREEN);
         results.add(li);
 
         return results;
     }
 
-    protected void setActionBarIcon(int iconRes) {
-        toolbar.setNavigationIcon(iconRes);
+    /** Called when the user clicks the FAB button */
+    public void addTask(View view) {
+
+        new MaterialDialog.Builder(this)
+                .title("Add Task")
+                .customView(R.layout.addtask)
+                .negativeText("Cancel")
+                .positiveText("Add")
+                .negativeColor(Color.parseColor("#2196F3"))
+                .positiveColor(Color.parseColor("#2196F3"))
+                .build()
+                .show();
     }
 }

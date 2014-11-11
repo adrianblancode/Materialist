@@ -2,9 +2,11 @@
 <resources>
     <color name="colorPrimary">#F33446</color>
     <color name="colorPrimaryDark">#D32F2F</color>
-    <color name="colorAccent">#3F51B5</color>
+    <color name="colorAccent">#2196F3</color>
 
-    <color name="checkboxRed">#F33446</color>
-    <color name="checkboxBlue">#2196F3</color>
-    <color name="checkboxGreen">#4CAF50</color>
+    <color name="buttonRed">#F33446</color>
+    <color name="buttonBlue">#2196F3</color>
+    <color name="buttonGreen">#4CAF50</color>
+
+    <color name="white">#FFF</color>
 </resources>

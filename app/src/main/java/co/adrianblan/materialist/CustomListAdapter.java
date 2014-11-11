@@ -1,6 +1,7 @@
 package co.adrianblan.materialist;
 
 import android.content.Context;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +19,10 @@ public class CustomListAdapter extends BaseAdapter {
 
     private LayoutInflater layoutInflater;
 
+    public Context context;
+
     public CustomListAdapter(Context context, ArrayList listData) {
+        this.context = context;
         this.listData = listData;
         layoutInflater = LayoutInflater.from(context);
     }
@@ -63,7 +67,9 @@ public class CustomListAdapter extends BaseAdapter {
             holder.checkBoxView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.checkbox_selector_green, 0, 0, 0);
         }
 
-        holder.checkBoxView.setCompoundDrawablePadding(25);
+        //16dp to pixels
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        holder.checkBoxView.setCompoundDrawablePadding((int)((16 * displayMetrics.density) + 0.5));
 
         return convertView;
     }

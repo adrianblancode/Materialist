@@ -13,5 +13,4 @@
         <!-- name="android:windowTranslucentStatus" tools:targetApi="19">@color/colorPrimary</item>
         <item name="android:fitsSystemWindows" tools:targetApi="19">true</item-->
     </style>
-
 </resources>

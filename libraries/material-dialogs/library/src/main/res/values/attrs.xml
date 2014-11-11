@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <attr name="md_selector" format="reference" />
+    <attr name="md_divider" format="color" />
+
+</resources>
