@@ -5,8 +5,10 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 
 import java.util.ArrayList;
 
@@ -71,6 +73,7 @@ public class CustomListAdapter extends BaseAdapter {
         //16dp to pixels
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         holder.checkBoxView.setCompoundDrawablePadding((int)((16 * displayMetrics.density) + 0.5));
+        holder.checkBoxView.setChecked(listData.get(position).getChecked());
 
         return convertView;
     }

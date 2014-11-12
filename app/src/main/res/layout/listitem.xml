@@ -12,14 +12,12 @@
         android:paddingRight="16dp"
         android:drawableLeft="@drawable/checkbox_selector_red"
         android:drawablePadding="16dp"
+        android:button="@null"
+        android:background="@android:color/transparent"
 
         android:textSize="17sp"
         android:text="Test Checkbox"
-        android:checked="true"
-
-
-        android:button="@null"
-        android:background="@android:color/transparent"/>
-    <!-- Hax to support left margin on checkbox -->
+        />
+    <!--android:onClick="completeTask"-->
 
 </RelativeLayout>

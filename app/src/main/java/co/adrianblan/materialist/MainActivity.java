@@ -32,26 +32,33 @@ public class MainActivity extends ActionBarActivity{
     CustomListAdapter adapter;
     private Toolbar toolbar;
     FloatingActionButton fab;
+    TinyDB tinydb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        tasks = new TaskArrayList();
+
+        //Then the application is being reloaded
         if( savedInstanceState != null ) {
-            //Then the application is being reloaded
+            ArrayList<TaskItem> al = savedInstanceState.getParcelableArrayList("TaskArrayList");
+
+            for(TaskItem ti : al) {
+                tasks.addSorted(ti);
+            }
         }
 
         //Restore tasks from preferences
-        SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE);
-
+        /*SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE);
         try {
             tasks = (TaskArrayList) ObjectSerializer.deserialize(prefs.getString("taskArrayList", ObjectSerializer.serialize(new TaskArrayList())));
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
         setContentView(R.layout.main);
 
-        tasks = initListData();
         final ListView lv1 = (ListView) findViewById(R.id.listview);
         adapter = new CustomListAdapter(this, tasks);
         lv1.setAdapter(adapter);
@@ -64,8 +71,12 @@ public class MainActivity extends ActionBarActivity{
         ListView listView = (ListView) findViewById(R.id.listview);
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.attachToListView(listView);
+
+        //TinyDB makes calls to sharedPreferences easier
+        tinydb = new TinyDB(this);
     }
 
+    //Debug method to generate tasks
     private TaskArrayList initListData() {
         TaskArrayList results = new TaskArrayList();
 
@@ -87,12 +98,15 @@ public class MainActivity extends ActionBarActivity{
         return results;
     }
 
+    // Called when the user completes a task
+    //public void completeTask(View view){
+    //}
 
     View positiveAction;
     TaskItem.Color checkedColor;
     String taskTitle;
 
-    /** Called when the user clicks the FAB button */
+    // Called when the user clicks the FAB button
     public void addTask(View view) {
 
         EditText taskTitleText;
@@ -116,6 +130,7 @@ public class MainActivity extends ActionBarActivity{
                     TaskItem li = new TaskItem();
                     li.setText(taskTitle);
                     li.setColor(checkedColor);
+                    li.setChecked(false);
                     tasks.addSorted(li);
                     adapter.notifyDataSetChanged();
 
@@ -149,15 +164,24 @@ public class MainActivity extends ActionBarActivity{
         taskPriority.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             public void onCheckedChanged(RadioGroup taskPriority, int checkedId) {
 
-            RadioButton checkedRadioButton = (RadioButton) taskPriority.findViewById(checkedId);
+                RadioButton checkedRadioButton = (RadioButton) taskPriority.findViewById(checkedId);
 
-            if (checkedRadioButton.isChecked()) {
+                if (checkedRadioButton.isChecked()) {
 
-                //We save the color value of the radio button
-                //Subtract one to make it zero indexed, mod 3 since it seems to count previous dialogs too
-                checkedColor = TaskItem.Color.values()[(checkedId - 1) % 3];
-                positiveAction.setEnabled(taskTitle.trim().length() > 0 && checkedColor != null);
-            }
+                    //We save the color value of the radio button
+                    if(checkedId == R.id.task_importance_red){
+                        checkedColor = TaskItem.Color.RED;
+                    } else if(checkedId == R.id.task_importance_blue){
+                        checkedColor = TaskItem.Color.BLUE;
+                    } else if(checkedId == R.id.task_importance_green){
+                        checkedColor = TaskItem.Color.GREEN;
+                    } else {
+                        checkedColor = null;
+                    }
+
+                    System.out.println(checkedColor);
+                    positiveAction.setEnabled(taskTitle.trim().length() > 0 && checkedColor != null);
+                }
             }
         });
 
@@ -165,18 +189,14 @@ public class MainActivity extends ActionBarActivity{
         positiveAction.setEnabled(false);
     }
 
+    public void onSaveInstanceState(Bundle savedState) {
+
+        super.onSaveInstanceState(savedState);
+        savedState.putParcelableArrayList("TaskArrayList", tasks);
+    }
+
     @Override
     protected void onStop(){
         super.onStop();
-
-        //save the task list to preferences
-        SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        try {
-            editor.putString("taskArrayList", ObjectSerializer.serialize(tasks));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        editor.commit();
     }
 }

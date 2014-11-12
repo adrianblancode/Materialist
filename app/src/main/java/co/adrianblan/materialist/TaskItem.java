@@ -1,9 +1,12 @@
 package co.adrianblan.materialist;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by Adrian on 2014-11-09.
  */
-public class TaskItem {
+public class TaskItem implements Parcelable {
 
     public static enum Color {
         RED, BLUE, GREEN;
@@ -11,6 +14,19 @@ public class TaskItem {
 
     private String text;
     private Color color;
+    private boolean checked;
+
+    public TaskItem(){
+        text = "";
+        color = null;
+        checked = false;
+    }
+
+    protected TaskItem(Parcel in) {
+        text = in.readString();
+        color = (Color) in.readValue(Color.class.getClassLoader());
+        checked = in.readInt() == 1;
+    }
 
     public String getText() {
         return text;
@@ -28,8 +44,41 @@ public class TaskItem {
         this.color = color;
     }
 
+    public boolean getChecked(){
+        return checked;
+    }
+
+    public void setChecked(boolean c){
+        checked = c;
+    }
+
     @Override
     public String toString() {
         return "[ text: " + text + ",  color: " + color + "]";
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(text);
+        dest.writeValue(color);
+        dest.writeInt(checked ? 1 : 0 );
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<TaskItem> CREATOR = new Parcelable.Creator<TaskItem>() {
+        @Override
+        public TaskItem createFromParcel(Parcel in) {
+            return new TaskItem(in);
+        }
+
+        @Override
+        public TaskItem[] newArray(int size) {
+            return new TaskItem[size];
+        }
+    };
 }
