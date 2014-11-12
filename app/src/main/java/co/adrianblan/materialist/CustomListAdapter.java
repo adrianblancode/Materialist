@@ -15,7 +15,7 @@ import java.util.ArrayList;
  */
 public class CustomListAdapter extends BaseAdapter {
 
-    private ArrayList<ListItem> listData;
+    private ArrayList<TaskItem> listData;
 
     private LayoutInflater layoutInflater;
 
@@ -46,6 +46,7 @@ public class CustomListAdapter extends BaseAdapter {
         ViewHolder holder;
         if (convertView == null) {
             convertView = layoutInflater.inflate(R.layout.listitem, null);
+
             holder = new ViewHolder();
             holder.checkBoxView = (CheckBox) convertView.findViewById(R.id.checkbox);
             convertView.setTag(holder);
@@ -55,15 +56,15 @@ public class CustomListAdapter extends BaseAdapter {
 
         holder.checkBoxView.setText(listData.get(position).getText());
 
-        if(listData.get(position).getColor() == ListItem.Color.RED) {
+        if(listData.get(position).getColor() == TaskItem.Color.RED) {
             holder.checkBoxView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.checkbox_selector_red, 0, 0, 0);
         }
 
-        else if(listData.get(position).getColor() == ListItem.Color.BLUE) {
+        else if(listData.get(position).getColor() == TaskItem.Color.BLUE) {
             holder.checkBoxView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.checkbox_selector_blue, 0, 0, 0);
         }
 
-        else if(listData.get(position).getColor() == ListItem.Color.GREEN) {
+        else if(listData.get(position).getColor() == TaskItem.Color.GREEN) {
             holder.checkBoxView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.checkbox_selector_green, 0, 0, 0);
         }
 

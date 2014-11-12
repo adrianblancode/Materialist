@@ -3,7 +3,7 @@ package co.adrianblan.materialist;
 /**
  * Created by Adrian on 2014-11-09.
  */
-public class ListItem {
+public class TaskItem {
 
     public static enum Color {
         RED, BLUE, GREEN;

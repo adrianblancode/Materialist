@@ -1,38 +1,30 @@
 package co.adrianblan.materialist;
 
-import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Adrian on 2014-11-09.
  */
 public class MainActivity extends ActionBarActivity{
 
+    TaskArrayList tasks;
     private Toolbar toolbar;
     FloatingActionButton fab;
 
@@ -41,9 +33,9 @@ public class MainActivity extends ActionBarActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        ArrayList image_details = getListData();
+        tasks = initListData();
         final ListView lv1 = (ListView) findViewById(R.id.listview);
-        lv1.setAdapter(new CustomListAdapter(this, image_details));
+        lv1.setAdapter(new CustomListAdapter(this, tasks));
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
@@ -55,38 +47,101 @@ public class MainActivity extends ActionBarActivity{
         fab.attachToListView(listView);
     }
 
-    private ArrayList getListData() {
-        ArrayList results = new ArrayList();
+    private TaskArrayList initListData() {
+        TaskArrayList results = new TaskArrayList();
 
-        ListItem li = new ListItem();
+        TaskItem li = new TaskItem();
         li.setText("Buy milk");
-        li.setColor(ListItem.Color.RED);
-        results.add(li);
+        li.setColor(TaskItem.Color.RED);
+        results.addSorted(li);
 
-        li = new ListItem();
+        li = new TaskItem();
         li.setText("Homework");
-        li.setColor(ListItem.Color.BLUE);
-        results.add(li);
+        li.setColor(TaskItem.Color.BLUE);
+        results.addSorted(li);
 
-        li = new ListItem();
+        li = new TaskItem();
         li.setText("Watch Breaking Bad");
-        li.setColor(ListItem.Color.GREEN);
-        results.add(li);
+        li.setColor(TaskItem.Color.GREEN);
+        results.addSorted(li);
 
         return results;
     }
 
+
+    View positiveAction;
+    TaskItem.Color checkedColor;
+    String taskTitle;
+
     /** Called when the user clicks the FAB button */
     public void addTask(View view) {
 
-        new MaterialDialog.Builder(this)
-                .title("Add Task")
-                .customView(R.layout.addtask)
-                .negativeText("Cancel")
-                .positiveText("Add")
-                .negativeColor(Color.parseColor("#2196F3"))
-                .positiveColor(Color.parseColor("#2196F3"))
-                .build()
-                .show();
+        EditText taskTitleText;
+        RadioGroup taskPriority;
+
+        taskTitle = "";
+        checkedColor = null;
+
+        MaterialDialog dialog = new MaterialDialog.Builder(this)
+            .title("Add Task")
+            .customView(R.layout.addtask)
+            .negativeText("Cancel")
+            .positiveText("Add")
+            .negativeColor(Color.parseColor("#2196F3"))
+            .positiveColor(Color.parseColor("#2196F3"))
+            .callback(new MaterialDialog.SimpleCallback() {
+                @Override
+                public void onPositive(MaterialDialog dialog) {
+
+                    //Creating a new TaskItem for the task
+                    TaskItem li = new TaskItem();
+                    li.setText(taskTitle);
+                    li.setColor(checkedColor);
+                    tasks.addSorted(li);
+
+                    Toast.makeText(getApplicationContext(), "Created: " + taskTitle + " with priority " + checkedColor.toString(), Toast.LENGTH_SHORT).show();
+                }
+            })
+            .build();
+
+        positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
+
+        taskTitleText = (EditText) dialog.getCustomView().findViewById(R.id.task_title);
+        taskTitleText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                taskTitle = s.toString();
+                positiveAction.setEnabled(taskTitle.trim().length() > 0 && checkedColor != null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        taskPriority = (RadioGroup) dialog.getCustomView().findViewById(R.id.task_importance);
+        //RadioButton checkedRadioButton = (RadioButton) taskPriority.findViewById(taskPriority.getCheckedRadioButtonId());
+
+        taskPriority.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            public void onCheckedChanged(RadioGroup taskPriority, int checkedId) {
+
+                RadioButton checkedRadioButton = (RadioButton) taskPriority.findViewById(checkedId);
+
+                if (checkedRadioButton.isChecked()) {
+
+                    //We save the color value of the radio button
+                    //Subtract one to make it zero indexed, mod 3 since it seems to count previous dialogs too
+                    checkedColor = TaskItem.Color.values()[(checkedId - 1) % 3];
+                    positiveAction.setEnabled(taskTitle.trim().length() > 0 && checkedColor != null);
+                }
+            }
+        });
+
+        dialog.show();
+        positiveAction.setEnabled(false);
     }
 }
