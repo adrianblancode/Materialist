@@ -1,5 +1,7 @@
 package co.adrianblan.materialist;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -24,18 +26,35 @@ import java.util.ArrayList;
  */
 public class MainActivity extends ActionBarActivity{
 
+    public static final String SHARED_PREFS_FILE = "MaterialistPreferences";
+
     TaskArrayList tasks;
+    CustomListAdapter adapter;
     private Toolbar toolbar;
     FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if( savedInstanceState != null ) {
+            //Then the application is being reloaded
+        }
+
+        //Restore tasks from preferences
+        SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE);
+
+        try {
+            tasks = (TaskArrayList) ObjectSerializer.deserialize(prefs.getString("taskArrayList", ObjectSerializer.serialize(new TaskArrayList())));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         setContentView(R.layout.main);
 
         tasks = initListData();
         final ListView lv1 = (ListView) findViewById(R.id.listview);
-        lv1.setAdapter(new CustomListAdapter(this, tasks));
+        adapter = new CustomListAdapter(this, tasks);
+        lv1.setAdapter(adapter);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
@@ -98,6 +117,7 @@ public class MainActivity extends ActionBarActivity{
                     li.setText(taskTitle);
                     li.setColor(checkedColor);
                     tasks.addSorted(li);
+                    adapter.notifyDataSetChanged();
 
                     Toast.makeText(getApplicationContext(), "Created: " + taskTitle + " with priority " + checkedColor.toString(), Toast.LENGTH_SHORT).show();
                 }
@@ -129,19 +149,34 @@ public class MainActivity extends ActionBarActivity{
         taskPriority.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             public void onCheckedChanged(RadioGroup taskPriority, int checkedId) {
 
-                RadioButton checkedRadioButton = (RadioButton) taskPriority.findViewById(checkedId);
+            RadioButton checkedRadioButton = (RadioButton) taskPriority.findViewById(checkedId);
 
-                if (checkedRadioButton.isChecked()) {
+            if (checkedRadioButton.isChecked()) {
 
-                    //We save the color value of the radio button
-                    //Subtract one to make it zero indexed, mod 3 since it seems to count previous dialogs too
-                    checkedColor = TaskItem.Color.values()[(checkedId - 1) % 3];
-                    positiveAction.setEnabled(taskTitle.trim().length() > 0 && checkedColor != null);
-                }
+                //We save the color value of the radio button
+                //Subtract one to make it zero indexed, mod 3 since it seems to count previous dialogs too
+                checkedColor = TaskItem.Color.values()[(checkedId - 1) % 3];
+                positiveAction.setEnabled(taskTitle.trim().length() > 0 && checkedColor != null);
+            }
             }
         });
 
         dialog.show();
         positiveAction.setEnabled(false);
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+
+        //save the task list to preferences
+        SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        try {
+            editor.putString("taskArrayList", ObjectSerializer.serialize(tasks));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        editor.commit();
     }
 }
