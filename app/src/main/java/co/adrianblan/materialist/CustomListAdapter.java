@@ -1,6 +1,9 @@
 package co.adrianblan.materialist;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,6 +49,7 @@ public class CustomListAdapter extends BaseAdapter {
 
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
+
         if (convertView == null) {
             convertView = layoutInflater.inflate(R.layout.listitem, null);
 
@@ -55,6 +59,9 @@ public class CustomListAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
+
+        holder.checkBoxView.setTag(listData.get(position));
+
 
         holder.checkBoxView.setText(listData.get(position).getText());
 
@@ -70,10 +77,21 @@ public class CustomListAdapter extends BaseAdapter {
             holder.checkBoxView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.checkbox_selector_green, 0, 0, 0);
         }
 
+        holder.checkBoxView.setChecked(listData.get(position).getChecked());
+
+        if(listData.get(position).getChecked()){
+            //Add strike through, set text to gray
+            holder.checkBoxView.setPaintFlags(holder.checkBoxView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.checkBoxView.setTextColor(Color.GRAY);
+        } else {
+            //Remove strike through, set text to black
+            holder.checkBoxView.setPaintFlags(holder.checkBoxView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.checkBoxView.setTextColor(Color.BLACK);
+        }
+
         //16dp to pixels
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         holder.checkBoxView.setCompoundDrawablePadding((int)((16 * displayMetrics.density) + 0.5));
-        holder.checkBoxView.setChecked(listData.get(position).getChecked());
 
         return convertView;
     }

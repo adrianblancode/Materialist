@@ -15,28 +15,70 @@ public class TaskArrayList extends ArrayList<TaskItem> implements Parcelable{
     protected TaskArrayList(Parcel in) {
 
         if(in.dataAvail() > 0) {
-            this.addSorted(new TaskItem(in));
+            this.insert(new TaskItem(in));
         }
     }
 
-    //Adds a task to the appropriate place
-    public boolean addSorted(TaskItem t){
+    //If you
+    public void sort(TaskItem ti){
+        this.remove(ti);
+        this.insert(ti);
+    }
 
-        if(t.getColor() == TaskItem.Color.RED){
-            this.add(0, t);
-        }
-        else {
+    //Adds a task to the appropriate place
+    //Priority goes first unchecked > checked, then red > blue > green
+    public void insert(TaskItem ti){
+
+        //Index where we can start adding the task depending if it's checked or not
+        int startIndex;
+
+        //Unchecked tasks should be higher up
+        if(!ti.getChecked()){
+            startIndex = 0;
+
+        } else {
+
+            startIndex = this.size();
+
+            //First occurrence of checked task
             for(int i = 0; i < this.size(); i++){
-                if(t.getColor() == this.get(i).getColor()){
-                    this.add(i, t);
-                    return true;
+                if(this.get(i).getChecked()){
+                    startIndex = i;
+                    break;
                 }
             }
-
-            this.add(t);
         }
 
-        return true;
+        //Red have priority
+        if(ti.getColor() == TaskItem.Color.RED){
+            this.add(startIndex, ti);
+            return;
+        }
+
+        for(int i = startIndex; i < this.size(); i++){
+
+            //Unchecked have priority over checked
+            if(!ti.getChecked() && this.get(i).getChecked()){
+                this.add(i, ti);
+                return;
+            }
+
+            //If it's not red, blue has priority
+            if(ti.getColor() == TaskItem.Color.BLUE && this.get(i).getColor() != TaskItem.Color.RED){
+                this.add(i, ti);
+                return;
+            }
+
+            //Green only has priority over green
+            if(ti.getColor() == TaskItem.Color.GREEN && this.get(i).getColor() == TaskItem.Color.GREEN){
+                this.add(i, ti);
+                return;
+            }
+        }
+
+        //Whatever
+        this.add(ti);
+        return;
     }
 
     @Override

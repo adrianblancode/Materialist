@@ -17,7 +17,7 @@
 
         android:textSize="17sp"
         android:text="Test Checkbox"
+        android:onClick="completeTask"
         />
-    <!--android:onClick="completeTask"-->
 
 </RelativeLayout>

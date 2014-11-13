@@ -52,9 +52,13 @@ public class TaskItem implements Parcelable {
         checked = c;
     }
 
+    public void toggleChecked(){
+        checked = !checked;
+    }
+
     @Override
     public String toString() {
-        return "[ text: " + text + ",  color: " + color + "]";
+        return "[ text: " + text + ",  color: " + color + ", checked: " + checked + "]";
     }
 
     @Override

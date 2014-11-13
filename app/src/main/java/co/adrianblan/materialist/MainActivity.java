@@ -1,7 +1,5 @@
 package co.adrianblan.materialist;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -45,7 +43,7 @@ public class MainActivity extends ActionBarActivity{
             ArrayList<TaskItem> al = savedInstanceState.getParcelableArrayList("TaskArrayList");
 
             for(TaskItem ti : al) {
-                tasks.addSorted(ti);
+                tasks.insert(ti);
             }
         }
 
@@ -59,15 +57,18 @@ public class MainActivity extends ActionBarActivity{
 
         setContentView(R.layout.main);
 
+        //We bind our arraylist of tasks to the adapter
         final ListView lv1 = (ListView) findViewById(R.id.listview);
         adapter = new CustomListAdapter(this, tasks);
         lv1.setAdapter(adapter);
 
+        //Set up the toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
 
+        //Set up the floating action button
         ListView listView = (ListView) findViewById(R.id.listview);
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.attachToListView(listView);
@@ -83,24 +84,33 @@ public class MainActivity extends ActionBarActivity{
         TaskItem li = new TaskItem();
         li.setText("Buy milk");
         li.setColor(TaskItem.Color.RED);
-        results.addSorted(li);
+        results.insert(li);
 
         li = new TaskItem();
         li.setText("Homework");
         li.setColor(TaskItem.Color.BLUE);
-        results.addSorted(li);
+        results.insert(li);
 
         li = new TaskItem();
         li.setText("Watch Breaking Bad");
         li.setColor(TaskItem.Color.GREEN);
-        results.addSorted(li);
+        results.insert(li);
 
         return results;
     }
 
     // Called when the user completes a task
-    //public void completeTask(View view){
-    //}
+    public void completeTask(View view){
+        TaskItem ti = (TaskItem) view.getTag();
+        int index = tasks.indexOf(ti);
+
+        if(index >= 0){
+            tasks.get(index).toggleChecked();
+            tasks.sort(tasks.get(index));
+        }
+
+        adapter.notifyDataSetChanged();
+    }
 
     View positiveAction;
     TaskItem.Color checkedColor;
@@ -131,7 +141,7 @@ public class MainActivity extends ActionBarActivity{
                     li.setText(taskTitle);
                     li.setColor(checkedColor);
                     li.setChecked(false);
-                    tasks.addSorted(li);
+                    tasks.insert(li);
                     adapter.notifyDataSetChanged();
 
                     Toast.makeText(getApplicationContext(), "Created: " + taskTitle + " with priority " + checkedColor.toString(), Toast.LENGTH_SHORT).show();
