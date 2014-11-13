@@ -29,13 +29,15 @@ public class MainActivity extends ActionBarActivity{
     TaskArrayList tasks;
     CustomListAdapter adapter;
     private Toolbar toolbar;
-    FloatingActionButton fab;
+    FloatingActionButton fab_add;
+    FloatingActionButton fab_remove;
     TinyDB tinydb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //Arraylist to save all our tasks
         tasks = new TaskArrayList();
 
         //Then the application is being reloaded
@@ -46,14 +48,6 @@ public class MainActivity extends ActionBarActivity{
                 tasks.insert(ti);
             }
         }
-
-        //Restore tasks from preferences
-        /*SharedPreferences prefs = getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE);
-        try {
-            tasks = (TaskArrayList) ObjectSerializer.deserialize(prefs.getString("taskArrayList", ObjectSerializer.serialize(new TaskArrayList())));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
 
         setContentView(R.layout.main);
 
@@ -68,13 +62,43 @@ public class MainActivity extends ActionBarActivity{
             setSupportActionBar(toolbar);
         }
 
-        //Set up the floating action button
+        //Set up the floating action buttons
         ListView listView = (ListView) findViewById(R.id.listview);
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.attachToListView(listView);
+
+        //For adding new tasks
+        fab_add = (FloatingActionButton) findViewById(R.id.fab_add);
+
+        //For removing completed tasks
+        fab_remove = (FloatingActionButton) findViewById(R.id.fab_remove);
+
+        //Hax to make the two fabs scroll together
+        fab_add.attachToListView(listView, new FloatingActionButton.FabOnScrollListener() {
+            @Override
+            public void onScrollDown() {
+                super.onScrollDown();
+                if(tasks.hasCompletedTasks()) {
+                    fab_remove.show();
+                }
+            }
+
+            @Override
+            public void onScrollUp() {
+                super.onScrollUp();
+                fab_remove.hide();
+            }
+        });
+
+
+
+        //Shows the remove fab if we have tasks to remove
+        if(tasks.hasCompletedTasks()) {
+            fab_remove.show(false);
+        } else {
+            fab_remove.hide(false);
+        }
 
         //TinyDB makes calls to sharedPreferences easier
-        tinydb = new TinyDB(this);
+        //tinydb = new TinyDB(this);
     }
 
     //Debug method to generate tasks
@@ -99,14 +123,23 @@ public class MainActivity extends ActionBarActivity{
         return results;
     }
 
-    // Called when the user completes a task
+    // Called when the user completes a task by pressing the checkbox
     public void completeTask(View view){
         TaskItem ti = (TaskItem) view.getTag();
         int index = tasks.indexOf(ti);
 
+        //Check for if we get a null object
         if(index >= 0){
             tasks.get(index).toggleChecked();
             tasks.sort(tasks.get(index));
+        }
+
+        //Shows the second fab depending if we have tasks to remove
+        //WARNING .isVisible() is a hacked method, must re-add if updated
+        if(tasks.hasCompletedTasks() && fab_add.isVisible()){
+            fab_remove.show();
+        } else {
+            fab_remove.hide();
         }
 
         adapter.notifyDataSetChanged();
@@ -116,7 +149,19 @@ public class MainActivity extends ActionBarActivity{
     TaskItem.Color checkedColor;
     String taskTitle;
 
-    // Called when the user clicks the FAB button
+    //Called when the user clicks the remove task FAB button
+    public void removeCompletedTasks(View view){
+
+        //Removes all completed tasks and notifies the view
+        tasks.removeCompletedTasks();
+        adapter.notifyDataSetChanged();
+
+        fab_remove.hide();
+
+        Toast.makeText(getApplicationContext(), "Removed completed tasks", Toast.LENGTH_SHORT).show();
+    }
+
+    // Called when the user clicks the add task FAB button
     public void addTask(View view) {
 
         EditText taskTitleText;
@@ -125,6 +170,7 @@ public class MainActivity extends ActionBarActivity{
         taskTitle = "";
         checkedColor = null;
 
+        //Creates a dialog for adding a new task
         MaterialDialog dialog = new MaterialDialog.Builder(this)
             .title("Add Task")
             .customView(R.layout.addtask)
@@ -143,14 +189,13 @@ public class MainActivity extends ActionBarActivity{
                     li.setChecked(false);
                     tasks.insert(li);
                     adapter.notifyDataSetChanged();
-
-                    Toast.makeText(getApplicationContext(), "Created: " + taskTitle + " with priority " + checkedColor.toString(), Toast.LENGTH_SHORT).show();
                 }
             })
             .build();
 
         positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
 
+        //If we name a task and it has a priority, enable positive button
         taskTitleText = (EditText) dialog.getCustomView().findViewById(R.id.task_title);
         taskTitleText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -168,9 +213,8 @@ public class MainActivity extends ActionBarActivity{
             }
         });
 
+        //If we set a priority and the task has a name, enable positive button
         taskPriority = (RadioGroup) dialog.getCustomView().findViewById(R.id.task_importance);
-        //RadioButton checkedRadioButton = (RadioButton) taskPriority.findViewById(taskPriority.getCheckedRadioButtonId());
-
         taskPriority.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             public void onCheckedChanged(RadioGroup taskPriority, int checkedId) {
 

@@ -286,6 +286,8 @@ public class FloatingActionButton extends ImageButton {
         toggle(false, animate, false);
     }
 
+    public boolean isVisible(){return mVisible;}
+
     private void toggle(final boolean visible, final boolean animate, boolean force) {
         if (mVisible != visible || force) {
             mVisible = visible;
