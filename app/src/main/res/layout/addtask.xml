@@ -55,6 +55,5 @@
             android:padding="8dp"
             android:drawableLeft="@drawable/radio_selector_green"
             android:drawablePadding="8dp"/>
-
     </RadioGroup>
 </LinearLayout>

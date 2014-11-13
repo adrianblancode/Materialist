@@ -1,5 +1,7 @@
 package co.adrianblan.materialist;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -7,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -15,8 +18,11 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.melnykov.fab.FloatingActionButton;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 /**
@@ -31,6 +37,7 @@ public class MainActivity extends ActionBarActivity{
     private Toolbar toolbar;
     FloatingActionButton fab_add;
     FloatingActionButton fab_remove;
+    Gson gson;
     TinyDB tinydb;
 
     @Override
@@ -40,14 +47,28 @@ public class MainActivity extends ActionBarActivity{
         //Arraylist to save all our tasks
         tasks = new TaskArrayList();
 
+        //Gson to serialize our objects to Json to save
+        gson = new Gson();
+
         //Then the application is being reloaded
         if( savedInstanceState != null ) {
-            ArrayList<TaskItem> al = savedInstanceState.getParcelableArrayList("TaskArrayList");
-
-            for(TaskItem ti : al) {
-                tasks.insert(ti);
-            }
+            //TODO save dialog
         }
+
+        SharedPreferences preferencesReader = getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE);
+
+        //Return null if preference doesn't exist
+        String serializedDataFromPreference = preferencesReader.getString("TaskArrayList", null);
+
+        Type taskArrayListType = new TypeToken<TaskArrayList>() {}.getType();
+        TaskArrayList temp = gson.fromJson(serializedDataFromPreference, taskArrayListType);
+
+        //If we successfully loaded a TaskArrayList from SharedPreferences, take it
+        if(temp != null){
+            tasks = temp;
+        }
+
+        System.out.println("Loading from: " + serializedDataFromPreference);
 
         setContentView(R.layout.main);
 
@@ -88,17 +109,12 @@ public class MainActivity extends ActionBarActivity{
             }
         });
 
-
-
         //Shows the remove fab if we have tasks to remove
         if(tasks.hasCompletedTasks()) {
             fab_remove.show(false);
         } else {
             fab_remove.hide(false);
         }
-
-        //TinyDB makes calls to sharedPreferences easier
-        //tinydb = new TinyDB(this);
     }
 
     //Debug method to generate tasks
@@ -195,8 +211,9 @@ public class MainActivity extends ActionBarActivity{
 
         positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
 
-        //If we name a task and it has a priority, enable positive button
         taskTitleText = (EditText) dialog.getCustomView().findViewById(R.id.task_title);
+
+        //If we name a task and it has a priority, enable positive button
         taskTitleText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -239,18 +256,30 @@ public class MainActivity extends ActionBarActivity{
             }
         });
 
+        //We want to bring up the keyboard for the title
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         dialog.show();
         positiveAction.setEnabled(false);
     }
 
     public void onSaveInstanceState(Bundle savedState) {
-
         super.onSaveInstanceState(savedState);
-        savedState.putParcelableArrayList("TaskArrayList", tasks);
     }
 
     @Override
     protected void onStop(){
         super.onStop();
+
+        //Serialize our TaskArrayList to Json
+        Type taskArrayListType = new TypeToken<TaskArrayList>(){}.getType();
+        String serializedData = gson.toJson(tasks, taskArrayListType);
+
+        System.out.println("Saving: " + serializedData);
+
+        //Save tasks in SharedPreferences
+        SharedPreferences preferencesReader = getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferencesReader.edit();
+        editor.putString("TaskArrayList", serializedData);
+        editor.commit();
     }
 }

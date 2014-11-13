@@ -3,6 +3,8 @@ package co.adrianblan.materialist;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.Gson;
+
 /**
  * Created by Adrian on 2014-11-09.
  */
@@ -20,6 +22,18 @@ public class TaskItem implements Parcelable {
         text = "";
         color = null;
         checked = false;
+    }
+
+    static public TaskItem create(String serializedData) {
+        // Use GSON to instantiate this class using the JSON representation of the state
+        Gson gson = new Gson();
+        return gson.fromJson(serializedData, TaskItem.class);
+    }
+
+    public String serialize() {
+        // Serialize this class into a JSON string using GSON
+        Gson gson = new Gson();
+        return gson.toJson(this);
     }
 
     protected TaskItem(Parcel in) {
