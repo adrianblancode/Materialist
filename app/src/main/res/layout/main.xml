@@ -43,7 +43,7 @@
                 android:layout_marginBottom="90dp"
                 android:layout_marginRight="16dp"
 
-                android:src="@drawable/ic_delete_white_24dp"
+                android:src="@drawable/ic_remove_white_36dp"
                 fab:fab_colorNormal="@color/colorAccent"
                 fab:fab_colorPressed="@color/colorAccentDark"
                 fab:fab_colorRipple="@color/colorAccentDark"
@@ -62,7 +62,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
 
-                android:src="@drawable/ic_fab"
+                android:src="@drawable/ic_add_white_36dp"
                 fab:fab_colorNormal="@color/colorPrimary"
                 fab:fab_colorPressed="@color/colorPrimaryDark"
                 fab:fab_colorRipple="@color/colorPrimaryDark"

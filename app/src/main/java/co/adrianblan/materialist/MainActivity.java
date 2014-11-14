@@ -38,7 +38,6 @@ public class MainActivity extends ActionBarActivity{
     FloatingActionButton fab_add;
     FloatingActionButton fab_remove;
     Gson gson;
-    TinyDB tinydb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
