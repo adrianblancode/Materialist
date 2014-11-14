@@ -9,6 +9,8 @@
         android:id="@+id/task_title"
         android:layout_width="match_parent"
         android:layout_height="48dp"
+        android:inputType="text"
+        android:maxLines="1"
         android:hint="Title"/>
 
     <TextView
@@ -27,6 +29,7 @@
             android:id="@+id/task_importance_red"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
+            android:layout_weight="1"
             android:text="High"
             android:button="@null"
             android:paddingTop="8dp"
@@ -40,6 +43,7 @@
             android:id="@+id/task_importance_blue"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
+            android:layout_weight="1"
             android:text="Mid"
             android:button="@null"
             android:padding="8dp"
@@ -50,6 +54,7 @@
             android:id="@+id/task_importance_green"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
+            android:layout_weight="1"
             android:text="Low"
             android:button="@null"
             android:padding="8dp"

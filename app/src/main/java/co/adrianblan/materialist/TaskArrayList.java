@@ -9,16 +9,9 @@ import java.util.Iterator;
 /**
  * Created by Adrian on 2014-11-12.
  */
-public class TaskArrayList extends ArrayList<TaskItem> implements Parcelable{
+public class TaskArrayList extends ArrayList<TaskItem>{
 
     public TaskArrayList(){}
-
-    protected TaskArrayList(Parcel in) {
-
-        if(in.dataAvail() > 0) {
-            this.insert(new TaskItem(in));
-        }
-    }
 
     //If you
     public void sort(TaskItem ti){
@@ -105,31 +98,4 @@ public class TaskArrayList extends ArrayList<TaskItem> implements Parcelable{
             }
         }
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-
-        for(int i = 0; i < this.size(); i++){
-            this.get(i).writeToParcel(dest, flags);
-        }
-    }
-
-    @SuppressWarnings("unused")
-    public static final Parcelable.Creator<TaskArrayList> CREATOR = new Parcelable.Creator<TaskArrayList>() {
-        @Override
-        public TaskArrayList createFromParcel(Parcel in) {
-            return new TaskArrayList(in);
-        }
-
-        @Override
-        public TaskArrayList[] newArray(int size) {
-            return new TaskArrayList[size];
-        }
-    };
-
 }
