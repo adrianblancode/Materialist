@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.cocosw.undobar.UndoBarController;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.melnykov.fab.FloatingActionButton;
@@ -173,7 +174,10 @@ public class MainActivity extends ActionBarActivity{
 
         fab_remove.hide();
 
-        Toast.makeText(getApplicationContext(), "Removed completed tasks", Toast.LENGTH_SHORT).show();
+        //TODO add listener
+        new UndoBarController.UndoBar(this).message("Removed completed tasks").show();
+
+        //Toast.makeText(getApplicationContext(), "Removed completed tasks", Toast.LENGTH_SHORT).show();
     }
 
     // Called when the user clicks the add task FAB button

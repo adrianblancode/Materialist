@@ -9,6 +9,9 @@
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
 
+        <!-- Material style for Undo Bar -->
+        <item name="undoBarStyle">@style/UndoBarMaterialStyle</item>
+
         <!-- Colored status bar for KitKat -->
         <!-- name="android:windowTranslucentStatus" tools:targetApi="19">@color/colorPrimary</item>
         <item name="android:fitsSystemWindows" tools:targetApi="19">true</item-->

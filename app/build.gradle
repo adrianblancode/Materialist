@@ -25,5 +25,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.+'
     compile project(':libraries:FloatingActionButton:library')
     compile project(':libraries:material-dialogs:library')
+    compile 'com.cocosw:undobar:1.+@aar'
     compile 'com.google.code.gson:gson:2.3'
 }
