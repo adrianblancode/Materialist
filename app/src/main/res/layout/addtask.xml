@@ -17,11 +17,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="10dp"
+        android:paddingBottom="5dp"
         android:text="Importance" />
 
     <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/task_importance"
-        android:layout_width="fill_parent"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
@@ -30,12 +31,8 @@
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:layout_weight="1"
-            android:button="@null"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:paddingRight="8dp"
-            android:drawableLeft="@drawable/radio_selector_red"
-            android:drawablePadding="8dp"
+            android:button="@drawable/radio_selector_red"
+            android:padding="10dp"
         />
 
         <RadioButton
@@ -43,19 +40,15 @@
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:layout_weight="1"
-            android:button="@null"
-            android:padding="8dp"
-            android:drawableLeft="@drawable/radio_selector_blue"
-            android:drawablePadding="8dp"/>
+            android:button="@drawable/radio_selector_blue"
+            android:padding="10dp"/>
 
         <RadioButton
             android:id="@+id/task_importance_green"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:layout_weight="1"
-            android:button="@null"
-            android:padding="8dp"
-            android:drawableLeft="@drawable/radio_selector_green"
-            android:drawablePadding="8dp"/>
+            android:button="@drawable/radio_selector_green"
+            android:padding="1dp"/>
     </RadioGroup>
 </LinearLayout>

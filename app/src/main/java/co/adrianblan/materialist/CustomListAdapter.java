@@ -65,7 +65,7 @@ public class CustomListAdapter extends BaseAdapter {
 
         holder.checkBoxView.setText(listData.get(position).getText());
 
-        if(listData.get(position).getColor() == TaskItem.Color.RED) {
+        /*if(listData.get(position).getColor() == TaskItem.Color.RED) {
             holder.checkBoxView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.checkbox_selector_red, 0, 0, 0);
         }
 
@@ -75,7 +75,7 @@ public class CustomListAdapter extends BaseAdapter {
 
         else if(listData.get(position).getColor() == TaskItem.Color.GREEN) {
             holder.checkBoxView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.checkbox_selector_green, 0, 0, 0);
-        }
+        }*/
 
         holder.checkBoxView.setChecked(listData.get(position).getChecked());
 
