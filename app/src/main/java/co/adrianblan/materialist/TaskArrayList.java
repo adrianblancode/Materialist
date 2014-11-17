@@ -13,10 +13,12 @@ public class TaskArrayList extends ArrayList<TaskItem>{
 
     public TaskArrayList(){}
 
-    //If you
+    //Removes an item from the list and then sorts it again
     public void sort(TaskItem ti){
-        this.remove(ti);
-        this.insert(ti);
+        if(ti != null) {
+            this.remove(ti);
+            this.insert(ti);
+        }
     }
 
     //Adds a task to the appropriate place
@@ -75,6 +77,12 @@ public class TaskArrayList extends ArrayList<TaskItem>{
         return;
     }
 
+    public void insert(TaskArrayList tal){
+        for(TaskItem ti : tal){
+            this.insert(ti);
+        }
+    }
+
     public boolean hasCompletedTasks(){
         //First occurrence of checked task
         for(int i = 0; i < this.size(); i++){
@@ -86,16 +94,20 @@ public class TaskArrayList extends ArrayList<TaskItem>{
         return false;
     }
 
-    //Removes all completed tasks
-    public void removeCompletedTasks(){
+    //Removes all completed tasks, returns a TaskArrayList of completed tasks
+    public TaskArrayList removeCompletedTasks(){
         Iterator<TaskItem> it = this.iterator();
+        TaskArrayList removed = new TaskArrayList();
 
         while(it.hasNext()){
             TaskItem ti = it.next();
 
             if(ti.getChecked()){
+                removed.add(ti);
                 it.remove();
             }
         }
+
+        return removed;
     }
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="buttonSize">23dp</dimen>
+    <dimen name="radioButtonSize">30dp</dimen>
     <dimen name="buttonRadius">3dp</dimen>
     <dimen name="buttonBorder">2.5dp</dimen>
     <dimen name="buttonPadding">16dp</dimen>

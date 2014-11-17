@@ -4,8 +4,8 @@
         <shape xmlns:android="http://schemas.android.com/apk/res/android"
             android:shape="oval">
             <size
-                android:height="@dimen/buttonSize"
-                android:width="@dimen/buttonSize"/>
+                android:height="@dimen/radioButtonSize"
+                android:width="@dimen/radioButtonSize"/>
             <solid
                 android:color="@color/buttonGreen"/>
         </shape>
@@ -14,8 +14,8 @@
         <shape xmlns:android="http://schemas.android.com/apk/res/android"
             android:shape="oval">
             <size
-                android:height="@dimen/buttonSize"
-                android:width="@dimen/buttonSize"/>
+                android:height="@dimen/radioButtonSize"
+                android:width="@dimen/radioButtonSize"/>
             <stroke
                 android:width="@dimen/buttonBorder"
                 android:color="@color/buttonGreen"/>

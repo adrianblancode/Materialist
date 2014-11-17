@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.cocosw.undobar.UndoBarController;
+import com.cocosw.undobar.UndoBarStyle;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.melnykov.fab.FloatingActionButton;
@@ -34,6 +36,7 @@ public class MainActivity extends ActionBarActivity{
     public static final String SHARED_PREFS_FILE = "MaterialistPreferences";
 
     TaskArrayList tasks;
+    TaskArrayList removed;
     CustomListAdapter adapter;
     private Toolbar toolbar;
     FloatingActionButton fab_add;
@@ -46,6 +49,9 @@ public class MainActivity extends ActionBarActivity{
 
         //Arraylist to save all our tasks
         tasks = new TaskArrayList();
+
+        //Completed tasks we have removed
+        removed = new TaskArrayList();
 
         //Gson to serialize our objects to Json to save
         gson = new Gson();
@@ -169,13 +175,22 @@ public class MainActivity extends ActionBarActivity{
     public void removeCompletedTasks(View view){
 
         //Removes all completed tasks and notifies the view
-        tasks.removeCompletedTasks();
+        removed = tasks.removeCompletedTasks();
         adapter.notifyDataSetChanged();
 
         fab_remove.hide();
 
-        //TODO add listener
-        new UndoBarController.UndoBar(this).message("Removed completed tasks").show();
+        //Create a toast, when the undo button is pressed re-add all removed tasks
+        new UndoBarController.UndoBar(this).message("Removed completed tasks").listener(new UndoBarController.UndoListener() {
+
+            public void onUndo(Parcelable p){
+                tasks.insert(removed);
+                adapter.notifyDataSetChanged();
+
+                //We assume since the tasks will be restored as checked, we can reintroduce the remove FAB
+                fab_remove.show();
+            }
+        }).noicon(true).show();
 
         //Toast.makeText(getApplicationContext(), "Removed completed tasks", Toast.LENGTH_SHORT).show();
     }
