@@ -56,16 +56,18 @@ public class MainActivity extends ActionBarActivity{
         //Gson to serialize our objects to Json to save
         gson = new Gson();
 
-        //Then the application is being reloaded
+        //If the application is being reloaded
         if( savedInstanceState != null ) {
             //TODO save dialog
         }
 
+        //SharedPreferences stores all data which we want to be permanent
         SharedPreferences preferencesReader = getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE);
 
         //Return null if preference doesn't exist
         String serializedDataFromPreference = preferencesReader.getString("TaskArrayList", null);
 
+        //Deserializes any taskarraylist we have saved
         Type taskArrayListType = new TypeToken<TaskArrayList>() {}.getType();
         TaskArrayList temp = gson.fromJson(serializedDataFromPreference, taskArrayListType);
 
@@ -78,19 +80,18 @@ public class MainActivity extends ActionBarActivity{
 
         setContentView(R.layout.main);
 
+
+        ListView lv = (ListView) findViewById(R.id.listview);
+
         //We bind our arraylist of tasks to the adapter
-        final ListView lv1 = (ListView) findViewById(R.id.listview);
         adapter = new CustomListAdapter(this, tasks);
-        lv1.setAdapter(adapter);
+        lv.setAdapter(adapter);
 
         //Set up the toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
-
-        //Set up the floating action buttons
-        ListView listView = (ListView) findViewById(R.id.listview);
 
         //For adding new tasks
         fab_add = (FloatingActionButton) findViewById(R.id.fab_add);
@@ -99,7 +100,7 @@ public class MainActivity extends ActionBarActivity{
         fab_remove = (FloatingActionButton) findViewById(R.id.fab_remove);
 
         //Hax to make the two fabs scroll together
-        fab_add.attachToListView(listView, new FloatingActionButton.FabOnScrollListener() {
+        fab_add.attachToListView(lv, new FloatingActionButton.FabOnScrollListener() {
             @Override
             public void onScrollDown() {
                 super.onScrollDown();
@@ -121,28 +122,6 @@ public class MainActivity extends ActionBarActivity{
         } else {
             fab_remove.hide(false);
         }
-    }
-
-    //Debug method to generate tasks
-    private TaskArrayList initListData() {
-        TaskArrayList results = new TaskArrayList();
-
-        TaskItem li = new TaskItem();
-        li.setText("Buy milk");
-        li.setColor(TaskItem.Color.RED);
-        results.insert(li);
-
-        li = new TaskItem();
-        li.setText("Homework");
-        li.setColor(TaskItem.Color.BLUE);
-        results.insert(li);
-
-        li = new TaskItem();
-        li.setText("Watch Breaking Bad");
-        li.setColor(TaskItem.Color.GREEN);
-        results.insert(li);
-
-        return results;
     }
 
     // Called when the user completes a task by pressing the checkbox
@@ -180,7 +159,7 @@ public class MainActivity extends ActionBarActivity{
 
         fab_remove.hide();
 
-        //Create a toast, when the undo button is pressed re-add all removed tasks
+        //Create a snackbar, when the undo button is pressed: re-add all removed tasks
         new UndoBarController.UndoBar(this).message("Removed completed tasks").listener(new UndoBarController.UndoListener() {
 
             public void onUndo(Parcelable p){
@@ -191,8 +170,6 @@ public class MainActivity extends ActionBarActivity{
                 fab_remove.show();
             }
         }).noicon(true).show();
-
-        //Toast.makeText(getApplicationContext(), "Removed completed tasks", Toast.LENGTH_SHORT).show();
     }
 
     // Called when the user clicks the add task FAB button
@@ -228,7 +205,6 @@ public class MainActivity extends ActionBarActivity{
             .build();
 
         positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
-
         taskTitleText = (EditText) dialog.getCustomView().findViewById(R.id.task_title);
 
         //If we name a task and it has a priority, enable positive button
@@ -268,7 +244,6 @@ public class MainActivity extends ActionBarActivity{
                         checkedColor = null;
                     }
 
-                    System.out.println(checkedColor);
                     positiveAction.setEnabled(taskTitle.trim().length() > 0 && checkedColor != null);
                 }
             }
@@ -277,13 +252,17 @@ public class MainActivity extends ActionBarActivity{
         //We want to bring up the keyboard for the title
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         dialog.show();
+
+        //Lastly, default value for positive action should be false
         positiveAction.setEnabled(false);
     }
 
+    //We should save our instance here, currently we do nothing
     public void onSaveInstanceState(Bundle savedState) {
         super.onSaveInstanceState(savedState);
     }
 
+    //Here is where we save permanent data
     @Override
     protected void onStop(){
         super.onStop();
@@ -298,6 +277,6 @@ public class MainActivity extends ActionBarActivity{
         SharedPreferences preferencesReader = getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferencesReader.edit();
         editor.putString("TaskArrayList", serializedData);
-        editor.commit();
+        editor.apply();
     }
 }

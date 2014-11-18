@@ -18,6 +18,8 @@ import java.util.ArrayList;
 /**
  * Created by Adrian on 2014-11-09.
  */
+
+//This adapter handles our arraylist of taskitems, and creates a listview of them
 public class CustomListAdapter extends BaseAdapter {
 
     private ArrayList<TaskItem> listData;
@@ -47,6 +49,7 @@ public class CustomListAdapter extends BaseAdapter {
         return position;
     }
 
+    //Do things with the listview
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
 
@@ -60,12 +63,14 @@ public class CustomListAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
+        //We set the tag to the TaskItem, so we can find it in callbacks
         holder.checkBoxView.setTag(listData.get(position));
 
-
+        //Set the text of the listview
         holder.checkBoxView.setText(listData.get(position).getText());
 
-        /*if(listData.get(position).getColor() == TaskItem.Color.RED) {
+        //Here we set the checkbox of the listview
+        if(listData.get(position).getColor() == TaskItem.Color.RED) {
             holder.checkBoxView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.checkbox_selector_red, 0, 0, 0);
         }
 
@@ -75,7 +80,7 @@ public class CustomListAdapter extends BaseAdapter {
 
         else if(listData.get(position).getColor() == TaskItem.Color.GREEN) {
             holder.checkBoxView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.checkbox_selector_green, 0, 0, 0);
-        }*/
+        }
 
         holder.checkBoxView.setChecked(listData.get(position).getChecked());
 
@@ -89,7 +94,7 @@ public class CustomListAdapter extends BaseAdapter {
             holder.checkBoxView.setTextColor(Color.BLACK);
         }
 
-        //16dp to pixels
+        //Padding, 16dp to pixels
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         holder.checkBoxView.setCompoundDrawablePadding((int)((16 * displayMetrics.density) + 0.5));
 

@@ -19,10 +19,15 @@
     <!-- Style for the snack bar -->
     <style name="UndoBar" parent="@style/UndoBarMaterialStyle">
         <item name="buttonStyle">@style/UndoBarButton</item>
-        <item name="android:textSize">14sp</item>
+        <item name="messageStyle">@style/UndoBarMessage</item>
+    </style>
+
+    <style name="UndoBarMessage" parent="@style/UndoBarMessageMaterial">
+        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="UndoBarButton" parent="@style/UndoBarButtonMaterial">
+        <item name="android:textSize">15sp</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:fontFamily" tools:ignore="NewApi">sans-serif-medium</item>
         <item name="android:textColor">@color/colorPrimary</item>
