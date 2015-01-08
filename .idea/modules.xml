@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/libraries/FloatingActionButton/library/library.iml" filepath="$PROJECT_DIR$/libraries/FloatingActionButton/library/library.iml" />
       <module fileurl="file://$PROJECT_DIR$/libraries/material-dialogs/library/material-dialogs-library.iml" filepath="$PROJECT_DIR$/libraries/material-dialogs/library/material-dialogs-library.iml" />
+      <module fileurl="file://$PROJECT_DIR$/libraries/material-ripple-master/library/material-ripple-master-library.iml" filepath="$PROJECT_DIR$/libraries/material-ripple-master/library/material-ripple-master-library.iml" />
     </modules>
   </component>
 </project>

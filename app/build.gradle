@@ -13,9 +13,15 @@ android {
     }
     buildTypes {
         release {
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //runProguard false
+            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+}
+
+repositories {
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
     }
 }
 
@@ -25,6 +31,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.+'
     compile project(':libraries:FloatingActionButton:library')
     compile project(':libraries:material-dialogs:library')
+    compile project(':libraries:material-ripple-master:library')
     compile 'com.cocosw:undobar:1.+@aar'
     compile 'com.google.code.gson:gson:2.3'
 }

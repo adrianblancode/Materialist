@@ -10,8 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.TextView;
+import android.widget.ToggleButton;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -57,52 +62,55 @@ public class CustomListAdapter extends BaseAdapter {
             convertView = layoutInflater.inflate(R.layout.listitem, null);
 
             holder = new ViewHolder();
-            holder.checkBoxView = (CheckBox) convertView.findViewById(R.id.checkbox);
+            holder.buttonView = (ToggleButton) convertView.findViewById(R.id.listbutton);
+            holder.textView = (TextView) convertView.findViewById(R.id.listtext);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
         //We set the tag to the TaskItem, so we can find it in callbacks
-        holder.checkBoxView.setTag(listData.get(position));
-
-        //Set the text of the listview
-        holder.checkBoxView.setText(listData.get(position).getText());
+        holder.buttonView.setTag(listData.get(position));
+        holder.textView.setTag(listData.get(position));
 
         //Here we set the checkbox of the listview
         if(listData.get(position).getColor() == TaskItem.Color.RED) {
-            holder.checkBoxView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.checkbox_selector_red, 0, 0, 0);
+            holder.buttonView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.checkbox_selector_red, 0, 0, 0);
         }
 
         else if(listData.get(position).getColor() == TaskItem.Color.BLUE) {
-            holder.checkBoxView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.checkbox_selector_blue, 0, 0, 0);
+            holder.buttonView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.checkbox_selector_blue, 0, 0, 0);
         }
 
         else if(listData.get(position).getColor() == TaskItem.Color.GREEN) {
-            holder.checkBoxView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.checkbox_selector_green, 0, 0, 0);
+            holder.buttonView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.checkbox_selector_green, 0, 0, 0);
         }
 
-        holder.checkBoxView.setChecked(listData.get(position).getChecked());
-
-        if(listData.get(position).getChecked()){
-            //Add strike through, set text to gray
-            holder.checkBoxView.setPaintFlags(holder.checkBoxView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            holder.checkBoxView.setTextColor(Color.GRAY);
-        } else {
-            //Remove strike through, set text to black
-            holder.checkBoxView.setPaintFlags(holder.checkBoxView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-            holder.checkBoxView.setTextColor(Color.BLACK);
-        }
+        holder.buttonView.setChecked(listData.get(position).getChecked());
 
         //Padding, 16dp to pixels
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        holder.checkBoxView.setCompoundDrawablePadding((int)((16 * displayMetrics.density) + 0.5));
+        holder.buttonView.setCompoundDrawablePadding((int)((16 * displayMetrics.density) + 0.5));
+
+        //Set the text of the listview
+        holder.textView.setText(listData.get(position).getText());
+
+        if(listData.get(position).getChecked()){
+            //Add strike through, set text to gray
+            holder.textView.setPaintFlags(holder.buttonView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.textView.setTextColor(Color.GRAY);
+        } else {
+            //Remove strike through, set text to black
+            holder.textView.setPaintFlags(holder.buttonView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.textView.setTextColor(Color.BLACK);
+        }
 
         return convertView;
     }
 
     static class ViewHolder {
-        CheckBox checkBoxView;
+        ToggleButton buttonView;
+        TextView textView;
     }
 
 }

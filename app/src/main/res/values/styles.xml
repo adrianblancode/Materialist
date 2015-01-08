@@ -23,7 +23,7 @@
     </style>
 
     <style name="UndoBarMessage" parent="@style/UndoBarMessageMaterial">
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">15sp</item>
     </style>
 
     <style name="UndoBarButton" parent="@style/UndoBarButtonMaterial">

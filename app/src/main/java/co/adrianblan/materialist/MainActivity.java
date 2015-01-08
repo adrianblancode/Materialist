@@ -11,6 +11,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.balysv.materialripple.MaterialRippleLayout;
 import com.cocosw.undobar.UndoBarController;
 import com.cocosw.undobar.UndoBarStyle;
 import com.google.gson.Gson;
@@ -76,7 +79,7 @@ public class MainActivity extends ActionBarActivity{
             tasks = temp;
         }
 
-        System.out.println("Loading from: " + serializedDataFromPreference);
+        System.out.println("Loading: " + serializedDataFromPreference);
 
         setContentView(R.layout.main);
 
@@ -127,26 +130,59 @@ public class MainActivity extends ActionBarActivity{
     // Called when the user completes a task by pressing the checkbox
     public void completeTask(View view){
         TaskItem ti = (TaskItem) view.getTag();
-        int index = tasks.indexOf(ti);
+        final int index = tasks.indexOf(ti);
 
         //Check for if we get a null object
-        if(index >= 0){
-            tasks.get(index).toggleChecked();
-            tasks.sort(tasks.get(index));
+        if(index < 0){
+            System.out.println("Weird index?");
+            return;
         }
 
-        //Shows the second fab depending if we have tasks to remove
-        //WARNING .isVisible() is a hacked method, must re-add if updated
-        if(tasks.hasCompletedTasks() && fab_add.isVisible()){
-            fab_remove.show();
+        final Animation anim = AnimationUtils.loadAnimation(this, R.anim.fade);
+
+        ListView listView = (ListView) findViewById(R.id.listview);
+        View view2;
+        final int firstListItemPosition = listView.getFirstVisiblePosition();
+        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
+
+
+        if (index < firstListItemPosition || index > lastListItemPosition ) {
+            view2 = listView.getAdapter().getView(index, null, listView);
         } else {
-            fab_remove.hide();
+            final int childIndex = index - firstListItemPosition;
+            view2 = listView.getChildAt(childIndex);
         }
 
-        adapter.notifyDataSetChanged();
+        anim.setAnimationListener(new Animation.AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {}
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                tasks.get(index).toggleChecked();
+                tasks.sort(tasks.get(index));
+
+                //Shows the second fab depending if we have tasks to remove
+                //WARNING .isVisible() is a hacked method, must re-add if updated
+                if(tasks.hasCompletedTasks() && fab_add.isVisible()){
+                    fab_remove.show();
+                } else {
+                    fab_remove.hide();
+                }
+
+                adapter.notifyDataSetChanged();
+            }
+        });
+        view2.startAnimation(anim);
+        view.startAnimation(anim);
     }
 
     View positiveAction;
+    TaskItem ti_temp;
     TaskItem.Color checkedColor;
     String taskTitle;
 
@@ -226,6 +262,110 @@ public class MainActivity extends ActionBarActivity{
 
         //If we set a priority and the task has a name, enable positive button
         taskPriority = (RadioGroup) dialog.getCustomView().findViewById(R.id.task_importance);
+        taskPriority.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            public void onCheckedChanged(RadioGroup taskPriority, int checkedId) {
+
+                RadioButton checkedRadioButton = (RadioButton) taskPriority.findViewById(checkedId);
+
+                if (checkedRadioButton.isChecked()) {
+
+                    //We save the color value of the radio button
+                    if(checkedId == R.id.task_importance_red){
+                        checkedColor = TaskItem.Color.RED;
+                    } else if(checkedId == R.id.task_importance_blue){
+                        checkedColor = TaskItem.Color.BLUE;
+                    } else if(checkedId == R.id.task_importance_green){
+                        checkedColor = TaskItem.Color.GREEN;
+                    } else {
+                        checkedColor = null;
+                    }
+
+                    positiveAction.setEnabled(taskTitle.trim().length() > 0 && checkedColor != null);
+                }
+            }
+        });
+
+        //We want to bring up the keyboard for the title
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        dialog.show();
+
+        //Lastly, default value for positive action should be false
+        positiveAction.setEnabled(false);
+    }
+
+    // Called when the user clicks the add task FAB button
+    public void updateTask(View view) {
+
+        EditText taskTitleText;
+        RadioGroup taskPriority;
+
+        ti_temp = (TaskItem) view.getTag();
+        int index = tasks.indexOf(ti_temp);
+
+        //Check for if we get a null object
+        if(index < 0){
+            System.out.println("Weird index?");
+            return;
+        }
+
+        //Creates a dialog for adding a new task
+        MaterialDialog dialog = new MaterialDialog.Builder(this)
+                .title("Update Task")
+                .customView(R.layout.addtask)
+                .negativeText("Cancel")
+                .positiveText("Update")
+                .negativeColor(Color.parseColor("#2196F3"))
+                .positiveColor(Color.parseColor("#2196F3"))
+                .callback(new MaterialDialog.SimpleCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+
+                        //Modifying the taskitem
+                        ti_temp.setText(taskTitle);
+                        ti_temp.setColor(checkedColor);
+                        adapter.notifyDataSetChanged();
+                    }
+                })
+                .build();
+
+        taskTitle = ti_temp.getText();
+        checkedColor = ti_temp.getColor();
+
+        positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
+        positiveAction.setEnabled(true);
+
+        taskTitleText = (EditText) dialog.getCustomView().findViewById(R.id.task_title);
+        taskTitleText.append(taskTitle);
+
+        //If we name a task and it has a priority, enable positive button
+        taskTitleText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                taskTitle = s.toString();
+                positiveAction.setEnabled(taskTitle.trim().length() > 0 && checkedColor != null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        //If we set a priority and the task has a name, enable positive button
+        taskPriority = (RadioGroup) dialog.getCustomView().findViewById(R.id.task_importance);
+
+        //Set the color
+        if(checkedColor == TaskItem.Color.RED) {
+            taskPriority.check(R.id.task_importance_red);
+        } else if(checkedColor == TaskItem.Color.BLUE) {
+            taskPriority.check(R.id.task_importance_blue);
+        } else if(checkedColor == TaskItem.Color.GREEN) {
+            taskPriority.check(R.id.task_importance_green);
+        }
+
         taskPriority.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             public void onCheckedChanged(RadioGroup taskPriority, int checkedId) {
 
