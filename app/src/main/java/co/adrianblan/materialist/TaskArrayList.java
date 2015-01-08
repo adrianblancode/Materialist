@@ -94,20 +94,32 @@ public class TaskArrayList extends ArrayList<TaskItem>{
         return false;
     }
 
-    //Removes all completed tasks, returns a TaskArrayList of completed tasks
-    public TaskArrayList removeCompletedTasks(){
+    //Returns a list of all completed tasks
+    public TaskArrayList getCompletedTasks(){
         Iterator<TaskItem> it = this.iterator();
-        TaskArrayList removed = new TaskArrayList();
+        TaskArrayList completed = new TaskArrayList();
 
         while(it.hasNext()){
             TaskItem ti = it.next();
 
             if(ti.getChecked()){
-                removed.add(ti);
-                it.remove();
+                completed.add(ti);
             }
         }
 
-        return removed;
+        return completed;
+    }
+
+    //Removes all completed tasks, returns a TaskArrayList of completed tasks
+    public void removeCompletedTasks(){
+        Iterator<TaskItem> it = this.iterator();
+
+        while(it.hasNext()){
+            TaskItem ti = it.next();
+
+            if(ti.getChecked()){
+                it.remove();
+            }
+        }
     }
 }

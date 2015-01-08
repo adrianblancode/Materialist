@@ -3,6 +3,7 @@ package co.adrianblan.materialist;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.app.ActionBarActivity;
@@ -12,24 +13,23 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
+import android.view.animation.ScaleAnimation;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.balysv.materialripple.MaterialRippleLayout;
 import com.cocosw.undobar.UndoBarController;
-import com.cocosw.undobar.UndoBarStyle;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.melnykov.fab.FloatingActionButton;
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 
 /**
  * Created by Adrian on 2014-11-09.
@@ -125,11 +125,18 @@ public class MainActivity extends ActionBarActivity{
         } else {
             fab_remove.hide(false);
         }
+
+        // Only set the tint if the device is running KitKat or above
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            SystemBarTintManager tintManager = new SystemBarTintManager(this);
+            tintManager.setStatusBarTintEnabled(true);
+            tintManager.setStatusBarTintColor(getResources().getColor(R.color.colorPrimaryDark));
+        }
     }
 
     // Called when the user completes a task by pressing the checkbox
     public void completeTask(View view){
-        TaskItem ti = (TaskItem) view.getTag();
+        final TaskItem ti = (TaskItem) view.getTag();
         final int index = tasks.indexOf(ti);
 
         //Check for if we get a null object
@@ -138,22 +145,23 @@ public class MainActivity extends ActionBarActivity{
             return;
         }
 
-        final Animation anim = AnimationUtils.loadAnimation(this, R.anim.fade);
+        //First we fade out the animation, then we fade it in
+        final Animation fade_out = AnimationUtils.loadAnimation(this, R.anim.fade_out);
+        final Animation fade_in = AnimationUtils.loadAnimation(this, R.anim.fade_in);
 
-        ListView listView = (ListView) findViewById(R.id.listview);
-        View view2;
-        final int firstListItemPosition = listView.getFirstVisiblePosition();
-        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
+        fade_in.setAnimationListener(new Animation.AnimationListener() {
 
+            @Override
+            public void onAnimationStart(Animation animation) {}
 
-        if (index < firstListItemPosition || index > lastListItemPosition ) {
-            view2 = listView.getAdapter().getView(index, null, listView);
-        } else {
-            final int childIndex = index - firstListItemPosition;
-            view2 = listView.getChildAt(childIndex);
-        }
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
 
-        anim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationEnd(Animation animation) {}
+        });
+
+        fade_out.setAnimationListener(new Animation.AnimationListener() {
 
             @Override
             public void onAnimationStart(Animation animation) {}
@@ -175,10 +183,13 @@ public class MainActivity extends ActionBarActivity{
                 }
 
                 adapter.notifyDataSetChanged();
+
+                //Sorts the task, then plays the animation for the new one
+                findViewByIndex(tasks.indexOf(ti), (ListView) findViewById(R.id.listview)).startAnimation(fade_in);
             }
         });
-        view2.startAnimation(anim);
-        view.startAnimation(anim);
+
+        findViewByIndex(index, (ListView) findViewById(R.id.listview)).startAnimation(fade_out);
     }
 
     View positiveAction;
@@ -190,8 +201,27 @@ public class MainActivity extends ActionBarActivity{
     public void removeCompletedTasks(View view){
 
         //Removes all completed tasks and notifies the view
-        removed = tasks.removeCompletedTasks();
-        adapter.notifyDataSetChanged();
+        removed = tasks.getCompletedTasks();
+
+        final Animation fade_out = AnimationUtils.loadAnimation(this, R.anim.fade_out);
+        fade_out.setAnimationListener(new Animation.AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {}
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                tasks.removeCompletedTasks();
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+        for(TaskItem ti : removed){
+            findViewByIndex(tasks.indexOf(ti), (ListView) findViewById(R.id.listview)).startAnimation(fade_out);
+        }
 
         fab_remove.hide();
 
@@ -418,5 +448,19 @@ public class MainActivity extends ActionBarActivity{
         SharedPreferences.Editor editor = preferencesReader.edit();
         editor.putString("TaskArrayList", serializedData);
         editor.apply();
+    }
+
+    public View findViewByIndex(int index, ListView listView) {
+
+        final int firstListItemPosition = listView.getFirstVisiblePosition();
+        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
+
+
+        if (index < firstListItemPosition || index > lastListItemPosition) {
+            return listView.getAdapter().getView(index, null, listView);
+        } else {
+            final int childIndex = index - firstListItemPosition;
+            return listView.getChildAt(childIndex);
+        }
     }
 }

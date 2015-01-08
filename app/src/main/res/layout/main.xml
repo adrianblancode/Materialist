@@ -6,7 +6,9 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="1">
+    android:weightSum="1"
+    android:fitsSystemWindows="true"
+    android:clipToPadding="false">
 
     <android.support.v7.widget.Toolbar
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -23,7 +25,8 @@
         xmlns:fab="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:foreground="?android:windowContentOverlay">
+        android:foreground="?android:windowContentOverlay"
+        >
 
         <ListView
             android:id="@+id/listview"

@@ -13,6 +13,7 @@
         app:rippleOverlay="false"
         app:rippleColor="#585858"
         app:rippleAlpha="0.2"
+        app:rippleDuration="200"
         app:rippleHover="true"
         app:rippleDelayClick="false">
 
@@ -47,6 +48,7 @@
         app:rippleOverlay="false"
         app:rippleColor="#585858"
         app:rippleAlpha="0.2"
+        app:rippleDuration="200"
         app:rippleHover="true"
         app:rippleDelayClick="false">
 

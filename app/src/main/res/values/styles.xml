@@ -12,8 +12,8 @@
         <item name="undoBarStyle">@style/UndoBar</item>
 
         <!-- Colored status bar for KitKat -->
-        <!-- name="android:windowTranslucentStatus" tools:targetApi="19">@color/colorPrimary</item>
-        <item name="android:fitsSystemWindows" tools:targetApi="19">true</item-->
+        <item name="android:windowTranslucentStatus" tools:targetApi="19">@color/colorPrimaryDark</item>
+        <!--item name="android:fitsSystemWindows" tools:targetApi="19">true</item-->
     </style>
 
     <!-- Style for the snack bar -->
