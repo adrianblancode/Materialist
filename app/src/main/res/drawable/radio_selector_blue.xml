@@ -1,34 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_checked="true">
-        <shape xmlns:android="http://schemas.android.com/apk/res/android"
-            android:shape="oval">
-            <size
-                android:height="@dimen/radioButtonSize"
-                android:width="@dimen/radioButtonSize"/>
-            <solid
-                android:color="@color/buttonBlue"/>
-            <padding
-                android:left="@dimen/buttonPadding"
-                android:right="@dimen/buttonPadding"
-                android:top="@dimen/buttonPadding"
-                android:bottom="@dimen/buttonPadding" />
-        </shape>
+        <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+            <item>
+                <shape xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:shape="rectangle">
+                    <corners
+                        android:radius="@dimen/buttonRadius"/>
+                    <size
+                        android:height="@dimen/radioButtonSize"
+                        android:width="@dimen/radioButtonSize"/>
+                    <solid
+                        android:color="@color/buttonBlue"/>
+                </shape>
+            </item>
+        </layer-list>
     </item>
-    <item android:state_checked="false">
+    <item>
         <shape xmlns:android="http://schemas.android.com/apk/res/android"
-            android:shape="oval">
+            android:shape="rectangle">
+            <corners
+                android:radius="@dimen/buttonRadius"/>
             <size
                 android:height="@dimen/radioButtonSize"
                 android:width="@dimen/radioButtonSize"/>
+            <solid/>
             <stroke
                 android:width="@dimen/buttonBorder"
                 android:color="@color/buttonBlue"/>
             <padding
                 android:left="@dimen/buttonPadding"
-                android:right="@dimen/buttonPadding"
                 android:top="@dimen/buttonPadding"
-                android:bottom="@dimen/buttonPadding" />
+                android:right="@dimen/buttonPadding"
+                android:bottom="@dimen/buttonPadding"/>
         </shape>
+
     </item>
 </selector>

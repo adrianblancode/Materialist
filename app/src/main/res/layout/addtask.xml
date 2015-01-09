@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_weight="1"
             android:button="@drawable/radio_selector_red"
-            android:padding="10dp"
+            android:padding="4dp"
         />
 
         <RadioButton
@@ -41,7 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_weight="1"
             android:button="@drawable/radio_selector_blue"
-            android:padding="10dp"/>
+            android:padding="4dp"/>
 
         <RadioButton
             android:id="@+id/task_importance_green"
@@ -49,6 +49,6 @@
             android:layout_width="wrap_content"
             android:layout_weight="1"
             android:button="@drawable/radio_selector_green"
-            android:padding="1dp"/>
+            android:padding="4dp"/>
     </RadioGroup>
 </LinearLayout>

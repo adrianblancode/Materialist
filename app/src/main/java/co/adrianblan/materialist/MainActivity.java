@@ -41,7 +41,6 @@ public class MainActivity extends ActionBarActivity{
     TaskArrayList tasks;
     TaskArrayList removed;
     CustomListAdapter adapter;
-    private Toolbar toolbar;
     FloatingActionButton fab_add;
     FloatingActionButton fab_remove;
     Gson gson;
@@ -225,8 +224,15 @@ public class MainActivity extends ActionBarActivity{
 
         fab_remove.hide();
 
+        //When the toast appears, we need to move the fabs up
+        final Animation fab_in = AnimationUtils.loadAnimation(this, R.anim.fab_in);
+        fab_in.setFillAfter(true);
+
+        final Animation fab_out = AnimationUtils.loadAnimation(this, R.anim.fab_out);
+        fab_out.setFillAfter(true);
+
         //Create a snackbar, when the undo button is pressed: re-add all removed tasks
-        new UndoBarController.UndoBar(this).message("Removed completed tasks").listener(new UndoBarController.UndoListener() {
+        new UndoBarController.UndoBar(this).message("Removed completed tasks").listener(new UndoBarController.AdvancedUndoListener() {
 
             public void onUndo(Parcelable p){
                 tasks.insert(removed);
@@ -234,8 +240,21 @@ public class MainActivity extends ActionBarActivity{
 
                 //We assume since the tasks will be restored as checked, we can reintroduce the remove FAB
                 fab_remove.show();
+                findViewById(R.id.fab_add).startAnimation(fab_out);
+                findViewById(R.id.fab_remove).startAnimation(fab_out);
             }
+
+            public void onHide(Parcelable p){
+                findViewById(R.id.fab_add).startAnimation(fab_out);
+                findViewById(R.id.fab_remove).startAnimation(fab_out);
+            }
+
+            public void onClear(Parcelable[] p){}
+
         }).noicon(true).show();
+        findViewById(R.id.fab_add).startAnimation(fab_in);
+        findViewById(R.id.fab_remove).startAnimation(fab_in);
+
     }
 
     // Called when the user clicks the add task FAB button
