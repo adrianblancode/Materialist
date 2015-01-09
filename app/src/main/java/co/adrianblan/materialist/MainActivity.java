@@ -59,9 +59,7 @@ public class MainActivity extends ActionBarActivity{
         gson = new Gson();
 
         //If the application is being reloaded
-        if( savedInstanceState != null ) {
-            //TODO save dialog
-        }
+        //if( savedInstanceState != null ) {}
 
         //SharedPreferences stores all data which we want to be permanent
         SharedPreferences preferencesReader = getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE);
@@ -234,7 +232,7 @@ public class MainActivity extends ActionBarActivity{
         //Create a snackbar, when the undo button is pressed: re-add all removed tasks
         new UndoBarController.UndoBar(this).message("Removed completed tasks").listener(new UndoBarController.AdvancedUndoListener() {
 
-            public void onUndo(Parcelable p){
+            public void onUndo(Parcelable p) {
                 tasks.insert(removed);
                 adapter.notifyDataSetChanged();
 
@@ -244,12 +242,13 @@ public class MainActivity extends ActionBarActivity{
                 findViewById(R.id.fab_remove).startAnimation(fab_out);
             }
 
-            public void onHide(Parcelable p){
+            public void onHide(Parcelable p) {
                 findViewById(R.id.fab_add).startAnimation(fab_out);
                 findViewById(R.id.fab_remove).startAnimation(fab_out);
             }
 
-            public void onClear(Parcelable[] p){}
+            public void onClear(Parcelable[] p) {
+            }
 
         }).noicon(true).show();
         findViewById(R.id.fab_add).startAnimation(fab_in);
@@ -351,6 +350,10 @@ public class MainActivity extends ActionBarActivity{
         ti_temp = (TaskItem) view.getTag();
         int index = tasks.indexOf(ti_temp);
 
+        taskTitle = ti_temp.getText();
+        checkedColor = ti_temp.getColor();
+        final TaskItem.Color originalColor = ti_temp.getColor();
+
         //Check for if we get a null object
         if(index < 0){
             System.out.println("Weird index?");
@@ -372,13 +375,16 @@ public class MainActivity extends ActionBarActivity{
                         //Modifying the taskitem
                         ti_temp.setText(taskTitle);
                         ti_temp.setColor(checkedColor);
+
+                        //If we change the priority, we need to sort it again
+                        if(!originalColor.equals(checkedColor)){
+                            tasks.sort(ti_temp);
+                        }
+
                         adapter.notifyDataSetChanged();
                     }
                 })
                 .build();
-
-        taskTitle = ti_temp.getText();
-        checkedColor = ti_temp.getColor();
 
         positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
         positiveAction.setEnabled(true);
