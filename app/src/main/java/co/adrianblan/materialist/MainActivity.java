@@ -2,15 +2,24 @@ package co.adrianblan.materialist;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.PixelFormat;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewParent;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
@@ -20,6 +29,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -132,12 +143,12 @@ public class MainActivity extends ActionBarActivity{
     }
 
     // Called when the user completes a task by pressing the checkbox
-    public void completeTask(View view){
+    public void completeTask(View view) {
         final TaskItem ti = (TaskItem) view.getTag();
         final int index = tasks.indexOf(ti);
 
         //Check for if we get a null object
-        if(index < 0){
+        if (index < 0) {
             System.out.println("Weird index?");
             return;
         }
@@ -149,31 +160,33 @@ public class MainActivity extends ActionBarActivity{
         fade_in.setAnimationListener(new Animation.AnimationListener() {
 
             @Override
-            public void onAnimationStart(Animation animation) {}
+            public void onAnimationStart(Animation animation) {
+            }
 
             @Override
-            public void onAnimationRepeat(Animation animation) {}
+            public void onAnimationRepeat(Animation animation) {
+            }
 
             @Override
-            public void onAnimationEnd(Animation animation) {}
+            public void onAnimationEnd(Animation animation) {
+            }
         });
 
         fade_out.setAnimationListener(new Animation.AnimationListener() {
 
             @Override
-            public void onAnimationStart(Animation animation) {}
+            public void onAnimationStart(Animation animation) {
+            }
 
             @Override
-            public void onAnimationRepeat(Animation animation) {}
+            public void onAnimationRepeat(Animation animation) {
+            }
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                tasks.get(index).toggleChecked();
-                tasks.sort(tasks.get(index));
-
                 //Shows the second fab depending if we have tasks to remove
                 //WARNING .isVisible() is a hacked method, must re-add if updated
-                if(tasks.hasCompletedTasks() && fab_add.isVisible()){
+                if (tasks.hasCompletedTasks() && fab_add.isVisible()) {
                     fab_remove.show();
                 } else {
                     fab_remove.hide();
@@ -186,7 +199,90 @@ public class MainActivity extends ActionBarActivity{
             }
         });
 
-        findViewByIndex(index, (ListView) findViewById(R.id.listview)).startAnimation(fade_out);
+        View current = findViewByIndex(tasks.indexOf(ti), (ListView) findViewById(R.id.listview));
+
+        WindowManager.LayoutParams windowParams = new WindowManager.LayoutParams();
+
+        //Getting the height of the statusbar
+        Rect rect = new Rect();
+        Window win = this.getWindow();
+        win.getDecorView().getWindowVisibleDisplayFrame(rect);
+        int statusBarHeight = rect.top;
+        int contentViewTop = win.findViewById(Window.ID_ANDROID_CONTENT).getTop();
+        int titleBarHeight = contentViewTop - statusBarHeight;
+
+        //Parameters so we can overlay our animation target over the item
+        windowParams.gravity = Gravity.TOP | Gravity.RIGHT;
+        windowParams.x = current.getLeft();
+        windowParams.y = current.getTop() + findViewById(R.id.toolbar).getHeight() - titleBarHeight;
+        windowParams.height = current.getHeight();
+        windowParams.width = current.getWidth();
+        windowParams.flags =
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                        | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                        | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                        | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
+        windowParams.format = PixelFormat.TRANSLUCENT;
+        windowParams.windowAnimations = 0;
+
+        View hooveredView = cloneView(current);
+
+        // Add the hoovered view to the window manager, as a new view in the screen
+        final WindowManager mWindowManager = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
+        mWindowManager.addView(hooveredView, windowParams);
+
+        float startY = current.getTop() + findViewById(R.id.toolbar).getHeight() - titleBarHeight;
+
+        ExpandAnimation expandAni = new ExpandAnimation(current, 500);
+
+        tasks.get(index).toggleChecked();
+        int newIndex = tasks.sort(tasks.get(index));
+        adapter.notifyDataSetChanged();
+        //current.startAnimation(expandAni);
+
+        View newView = findViewByIndex(tasks.indexOf(ti), (ListView) findViewById(R.id.listview));
+        float endY = newView.getTop() + findViewById(R.id.toolbar).getHeight() - titleBarHeight;
+
+        //current.startAnimation(fade_out);
+
+        fadeIn(hooveredView, startY, endY, windowParams, mWindowManager);
+    }
+
+    /*This will handle the first time call*/
+    public void fadeIn(final View notificationView, final float startY, final float endY, final WindowManager.LayoutParams params, final WindowManager mWindowManager){
+        final long startTime = System.currentTimeMillis();
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable(){
+            public void run(){
+                fadeInHandler(notificationView, startY, endY, params, mWindowManager, startTime);
+            }
+        }, 16);
+    }
+
+    /*This will handle the entire animation*/
+    public void fadeInHandler(final View notificationView, final float startY, final float endY, final WindowManager.LayoutParams params, final WindowManager mWindowManager, final long startTime){
+        long timeNow = System.currentTimeMillis();
+
+        float currentY = startY + ((timeNow - startTime)/300.0f) * (endY - startY);
+
+        //If the animation has gone too far
+        if (Math.abs(currentY - startY) >= Math.abs(endY - startY)){
+            currentY = endY;
+        }
+
+        params.y = (int) currentY;
+
+        mWindowManager.updateViewLayout(notificationView, params);
+        if (timeNow-startTime < 300){
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable(){
+                public void run(){
+                    fadeInHandler(notificationView, startY, endY, params, mWindowManager, startTime);
+                }
+            }, 16);
+        } else {
+            mWindowManager.removeView(notificationView);
+        }
     }
 
     View positiveAction;
@@ -200,7 +296,7 @@ public class MainActivity extends ActionBarActivity{
         //Removes all completed tasks and notifies the view
         removed = tasks.getCompletedTasks();
 
-        final Animation fade_out = AnimationUtils.loadAnimation(this, R.anim.fade_out);
+        final Animation fade_out = AnimationUtils.loadAnimation(this, R.anim.scale_down);
         fade_out.setAnimationListener(new Animation.AnimationListener() {
 
             @Override
@@ -487,5 +583,25 @@ public class MainActivity extends ActionBarActivity{
             final int childIndex = index - firstListItemPosition;
             return listView.getChildAt(childIndex);
         }
+    }
+
+    //Clones a task view, it's inflated and filled with the same values
+    public View cloneView(View view){
+        View result = LayoutInflater.from(this).inflate(R.layout.listitem, null);
+
+        //Sets the text to be the same
+        TextView newTextView = (TextView) result.findViewById(R.id.listtext);
+        TextView oldTextView = (TextView) view.findViewById(R.id.listtext);
+        newTextView.setText(oldTextView.getText());
+
+        //Sets the checkbox to be the same
+        ToggleButton newToggleButton = (ToggleButton) result.findViewById(R.id.listbutton);
+        ToggleButton oldToggleButton = (ToggleButton) view.findViewById(R.id.listbutton);
+
+        newToggleButton.setCompoundDrawables(oldToggleButton.getCompoundDrawables()[0], null, null, null);
+        newToggleButton.setCompoundDrawablePadding(oldToggleButton.getCompoundDrawablePadding());
+        //newToggleButton.setPadding(oldToggleButton.getPaddingLeft(), oldToggleButton.getPaddingTop(), oldToggleButton.getPaddingRight(), oldToggleButton.getPaddingBottom());
+
+        return result;
     }
 }

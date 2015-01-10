@@ -14,16 +14,18 @@ public class TaskArrayList extends ArrayList<TaskItem>{
     public TaskArrayList(){}
 
     //Removes an item from the list and then sorts it again
-    public void sort(TaskItem ti){
+    public int sort(TaskItem ti){
         if(ti != null) {
             this.remove(ti);
-            this.insert(ti);
+            return this.insert(ti);
         }
+
+        else return -1;
     }
 
     //Adds a task to the appropriate place
     //Priority goes first unchecked with red > blue > green, then checked in chronological order
-    public void insert(TaskItem ti){
+    public int insert(TaskItem ti){
 
         //Index where we can start adding the task depending if it's checked or not
         int startIndex;
@@ -48,7 +50,7 @@ public class TaskArrayList extends ArrayList<TaskItem>{
         //Place red unchecked, and checked
         if(ti.getColor() == TaskItem.Color.RED || ti.getChecked()){
             this.add(startIndex, ti);
-            return;
+            return startIndex;
         }
 
         for(int i = startIndex; i < this.size(); i++){
@@ -56,25 +58,25 @@ public class TaskArrayList extends ArrayList<TaskItem>{
             //Unchecked have priority over checked
             if(!ti.getChecked() && this.get(i).getChecked()){
                 this.add(i, ti);
-                return;
+                return i;
             }
 
             //If it's not red, blue has priority
             if(ti.getColor() == TaskItem.Color.BLUE && this.get(i).getColor() != TaskItem.Color.RED){
                 this.add(i, ti);
-                return;
+                return i;
             }
 
             //Green only has priority over green
             if(ti.getColor() == TaskItem.Color.GREEN && this.get(i).getColor() == TaskItem.Color.GREEN){
                 this.add(i, ti);
-                return;
+                return i;
             }
         }
 
         //Whatever
         this.add(ti);
-        return;
+        return this.size() - 1;
     }
 
     public void insert(TaskArrayList tal){

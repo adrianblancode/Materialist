@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/listitem"
     android:layout_width="fill_parent"
     android:layout_height="?android:attr/listPreferredItemHeight">
+
+    <LinearLayout
+        android:id="@+id/listwrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
     <com.balysv.materialripple.MaterialRippleLayout
         android:id="@+id/listbuttonripple"
@@ -64,21 +69,6 @@
             android:onClick="updateTask"
             android:clickable="true"/>
     </com.balysv.materialripple.MaterialRippleLayout>
+    </LinearLayout>
 
-    <!--CheckBox
-        android:id="@+id/checkbox"
-        android:layout_width="fill_parent"
-        android:layout_height="62dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:drawableLeft="@drawable/checkbox_selector_red"
-        android:drawablePadding="16dp"
-        android:button="@null"
-        android:background="@android:color/transparent"
-
-        android:textSize="17sp"
-        android:text="Test Checkbox"
-        android:onClick="completeTask"
-        !-->
-
-</RelativeLayout>
+</LinearLayout>
