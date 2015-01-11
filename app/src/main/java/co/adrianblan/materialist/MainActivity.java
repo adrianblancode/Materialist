@@ -14,6 +14,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -31,6 +32,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -147,13 +149,6 @@ public class MainActivity extends ActionBarActivity{
     // Called when the user completes a task by pressing the checkbox
     public void completeTask(View view) {
         final TaskItem ti = (TaskItem) view.getTag();
-        int oldIndex = tasks.indexOf(ti);
-        TaskItem newTask = new TaskItem(tasks.get(tasks.indexOf(ti)));
-        newTask.toggleChecked();
-        int newIndex = tasks.insert(newTask);
-
-        adapter.notifyDataSetChanged();
-
         final int index = tasks.indexOf(ti);
 
         //Check for if we get a null object
@@ -166,7 +161,56 @@ public class MainActivity extends ActionBarActivity{
         final Animation fade_out = AnimationUtils.loadAnimation(this, R.anim.fade_out);
         final Animation fade_in = AnimationUtils.loadAnimation(this, R.anim.fade_in);
 
+        fade_in.setAnimationListener(new Animation.AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {}
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+
+            @Override
+            public void onAnimationEnd(Animation animation) {}
+        });
+
+        fade_out.setAnimationListener(new Animation.AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {}
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                tasks.get(index).toggleChecked();
+                tasks.sort(tasks.get(index));
+
+                //Shows the second fab depending if we have tasks to remove
+                //WARNING .isVisible() is a hacked method, must re-add if updated
+                if(tasks.hasCompletedTasks() && fab_add.isVisible()){
+                    fab_remove.show();
+                } else {
+                    fab_remove.hide();
+                }
+
+                adapter.notifyDataSetChanged();
+
+                //Sorts the task, then plays the animation for the new one
+                View v = findViewByIndex(tasks.indexOf(ti), (ListView) findViewById(R.id.listview));
+                if(v != null){
+                    v.startAnimation(fade_in);
+                }
+            }
+        });
+
+        //Check != null
         View current = findViewByIndex(tasks.indexOf(ti), (ListView) findViewById(R.id.listview));
+        if(current != null) {
+            current.startAnimation(fade_out);
+        } else {
+            System.out.println("NULL, DO STUFF!");
+        }
 
         /*
         WindowManager.LayoutParams windowParams = new WindowManager.LayoutParams();
@@ -204,6 +248,7 @@ public class MainActivity extends ActionBarActivity{
 
         //View wrapper = this.findViewById(R.id.listwrapper);
 
+        /*
         View wrapper = current.findViewById(R.id.listwrapper);
         ExpandAnimation expandAni = new ExpandAnimation(wrapper, 500);
 
@@ -224,37 +269,10 @@ public class MainActivity extends ActionBarActivity{
                 //adapter.notifyDataSetChanged();
             }
         });
+        */
 
-        System.out.println(oldIndex + " " + ((ListView) findViewById(R.id.listview)).getChildCount());
-
-        //If it's the last item in the list, we don't need to animate it
-        if(oldIndex != ((ListView) findViewById(R.id.listview)).getChildCount() - 1) {
-            wrapper.startAnimation(expandAni);
-        } else {
-            tasks.remove(ti);
-        }
-
-        //findViewById(R.id.listitem).startAnimation(fade_out);
-
-        //Shows the second fab depending if we have tasks to remove
-        //WARNING .isVisible() is a hacked method, must re-add if updated
-        if (tasks.hasCompletedTasks() && fab_add.isVisible()) {
-            fab_remove.show();
-        } else {
-            fab_remove.hide();
-        }
-
-        View newView = findViewByIndex(tasks.indexOf(newTask), (ListView) findViewById(R.id.listview));
-
+        //View newView = findViewByIndex(tasks.indexOf(newTask), (ListView) findViewById(R.id.listview));
         //float endY = newView.getTop() + findViewById(R.id.toolbar).getHeight() - titleBarHeight;
-
-        //newView.startAnimation(fade_out);
-        View wrapper2 = newView.findViewById(R.id.listwrapper);
-        wrapper2.setVisibility(View.GONE);
-        ExpandAnimation expandAni2 = new ExpandAnimation(wrapper2, 500);
-
-        wrapper2.startAnimation(expandAni2);
-
         //fadeIn(hooveredView, startY, endY, windowParams, mWindowManager);
     }
 
@@ -304,8 +322,13 @@ public class MainActivity extends ActionBarActivity{
     TaskItem.Color checkedColor;
     String taskTitle;
 
+    boolean undoIsVisible = false;
+
     //Called when the user clicks the remove task FAB button
     public void removeCompletedTasks(View view){
+
+        final int add_margin = ((RelativeLayout.LayoutParams) findViewById(R.id.fab_add).getLayoutParams()).bottomMargin;
+        final int remove_margin = ((RelativeLayout.LayoutParams) findViewById(R.id.fab_remove).getLayoutParams()).bottomMargin;
 
         //Removes all completed tasks and notifies the view
         removed = tasks.getCompletedTasks();
@@ -327,20 +350,62 @@ public class MainActivity extends ActionBarActivity{
         });
 
         for(TaskItem ti : removed){
-            findViewByIndex(tasks.indexOf(ti), (ListView) findViewById(R.id.listview)).startAnimation(fade_out);
+            View v = findViewByIndex(tasks.indexOf(ti), (ListView) findViewById(R.id.listview));
+
+            if(v != null){
+                v.startAnimation(fade_out);
+            } else {
+                tasks.remove(ti);
+                adapter.notifyDataSetChanged();
+            }
         }
 
         fab_remove.hide();
 
         //When the toast appears, we need to move the fabs up
         final Animation fab_in = AnimationUtils.loadAnimation(this, R.anim.fab_in);
-        fab_in.setFillAfter(true);
+
+        fab_in.setAnimationListener(new Animation.AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {}
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                //The animation only moves the view, so we need to change the touch target too
+                ((RelativeLayout.LayoutParams) findViewById(R.id.fab_add).getLayoutParams()).bottomMargin = (int) (remove_margin * 0.6f);
+                ((RelativeLayout.LayoutParams) findViewById(R.id.fab_remove).getLayoutParams()).bottomMargin = remove_margin - add_margin + (int) (remove_margin * 0.6f);
+
+                fab_add.requestLayout();
+                fab_remove.requestLayout();
+            }
+        });
 
         final Animation fab_out = AnimationUtils.loadAnimation(this, R.anim.fab_out);
-        fab_out.setFillAfter(true);
+
+        fab_out.setAnimationListener(new Animation.AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {}
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                ((RelativeLayout.LayoutParams) findViewById(R.id.fab_add).getLayoutParams()).bottomMargin = add_margin;
+                ((RelativeLayout.LayoutParams) findViewById(R.id.fab_remove).getLayoutParams()).bottomMargin = remove_margin;
+
+                fab_add.requestLayout();
+                fab_remove.requestLayout();
+            }
+        });
 
         //Create a snackbar, when the undo button is pressed: re-add all removed tasks
-        new UndoBarController.UndoBar(this).message("Removed completed tasks").listener(new UndoBarController.AdvancedUndoListener() {
+        UndoBarController.UndoBar ub = new UndoBarController.UndoBar(this).message("Removed completed tasks").listener(new UndoBarController.AdvancedUndoListener() {
 
             public void onUndo(Parcelable p) {
                 tasks.insert(removed);
@@ -350,19 +415,29 @@ public class MainActivity extends ActionBarActivity{
                 fab_remove.show();
                 findViewById(R.id.fab_add).startAnimation(fab_out);
                 findViewById(R.id.fab_remove).startAnimation(fab_out);
+                undoIsVisible = false;
             }
 
             public void onHide(Parcelable p) {
                 findViewById(R.id.fab_add).startAnimation(fab_out);
                 findViewById(R.id.fab_remove).startAnimation(fab_out);
+                undoIsVisible = false;
             }
 
             public void onClear(Parcelable[] p) {
             }
 
-        }).noicon(true).show();
-        findViewById(R.id.fab_add).startAnimation(fab_in);
-        findViewById(R.id.fab_remove).startAnimation(fab_in);
+        }).noicon(true);
+
+        if(!undoIsVisible) {
+
+            ub.show();
+
+            //The task is removed, so the fabs must go up
+            findViewById(R.id.fab_add).startAnimation(fab_in);
+            findViewById(R.id.fab_remove).startAnimation(fab_in);
+            undoIsVisible = true;
+        }
 
     }
 
@@ -591,7 +666,11 @@ public class MainActivity extends ActionBarActivity{
         final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
 
         if (index < firstListItemPosition || index > lastListItemPosition) {
-            return listView.getAdapter().getView(index, null, listView);
+            System.out.println("Invisible view!");
+            return null;
+            //return listView.getAdapter().getView(index, null, listView);
+
+            //return null;
         } else {
             final int childIndex = index - firstListItemPosition;
             return listView.getChildAt(childIndex);
@@ -616,5 +695,12 @@ public class MainActivity extends ActionBarActivity{
         //newToggleButton.setPadding(oldToggleButton.getPaddingLeft(), oldToggleButton.getPaddingTop(), oldToggleButton.getPaddingRight(), oldToggleButton.getPaddingBottom());
 
         return result;
+    }
+
+    public static float convertPixelsToDp(float px, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float dp = px / (metrics.densityDpi / 160f);
+        return dp;
     }
 }
