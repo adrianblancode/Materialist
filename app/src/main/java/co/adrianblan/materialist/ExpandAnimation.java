@@ -1,9 +1,12 @@
 package co.adrianblan.materialist;
 
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
+import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.TextView;
 
 /**
  * This animation class is animating the expanding and reducing the size of a view.
@@ -13,7 +16,7 @@ import android.widget.LinearLayout.LayoutParams;
  */
 public class ExpandAnimation extends Animation {
     private View mAnimatedView;
-    private LayoutParams mViewLayoutParams;
+    private ViewGroup.MarginLayoutParams mViewLayoutParams;
     private int mMarginStart, mMarginEnd;
     private boolean mIsVisibleAfter = false;
     private boolean mWasEndedAlready = false;
@@ -27,20 +30,22 @@ public class ExpandAnimation extends Animation {
 
         setDuration(duration);
         mAnimatedView = view;
-        mViewLayoutParams = (LayoutParams) view.getLayoutParams();
+        mViewLayoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
 
         // decide to show or hide the view
-        //mIsVisibleAfter = (view.getVisibility() == View.VISIBLE);
+        mIsVisibleAfter = (view.getVisibility() == View.VISIBLE);
 
-        //mMarginStart = mViewLayoutParams.bottomMargin;
-        //mMarginEnd = (mMarginStart == 0 ? (0- view.getHeight()) : 0);
+        mMarginStart = mViewLayoutParams.bottomMargin;
+        mMarginEnd = (mMarginStart == 0 ? (0- view.getHeight()) : 0);
 
-        //view.setVisibility(View.VISIBLE);
+        view.setVisibility(View.VISIBLE);
     }
 
     @Override
     protected void applyTransformation(float interpolatedTime, Transformation t) {
-        /*super.applyTransformation(interpolatedTime, t);
+        super.applyTransformation(interpolatedTime, t);
+
+        mAnimatedView.setHasTransientState(true);
 
         if (interpolatedTime < 1.0f) {
 
@@ -59,8 +64,12 @@ public class ExpandAnimation extends Animation {
             if (mIsVisibleAfter) {
                 mAnimatedView.setVisibility(View.GONE);
             }
+            mAnimatedView.setHasTransientState(false);
             mWasEndedAlready = true;
         }
-        */
+    }
+
+    boolean isEnded(){
+        return mWasEndedAlready;
     }
 }

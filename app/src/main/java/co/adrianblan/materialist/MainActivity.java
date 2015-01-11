@@ -18,6 +18,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.Window;
 import android.view.WindowManager;
@@ -26,6 +27,7 @@ import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.view.animation.ScaleAnimation;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -145,6 +147,13 @@ public class MainActivity extends ActionBarActivity{
     // Called when the user completes a task by pressing the checkbox
     public void completeTask(View view) {
         final TaskItem ti = (TaskItem) view.getTag();
+        int oldIndex = tasks.indexOf(ti);
+        TaskItem newTask = new TaskItem(tasks.get(tasks.indexOf(ti)));
+        newTask.toggleChecked();
+        int newIndex = tasks.insert(newTask);
+
+        adapter.notifyDataSetChanged();
+
         final int index = tasks.indexOf(ti);
 
         //Check for if we get a null object
@@ -157,50 +166,9 @@ public class MainActivity extends ActionBarActivity{
         final Animation fade_out = AnimationUtils.loadAnimation(this, R.anim.fade_out);
         final Animation fade_in = AnimationUtils.loadAnimation(this, R.anim.fade_in);
 
-        fade_in.setAnimationListener(new Animation.AnimationListener() {
-
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-            }
-        });
-
-        fade_out.setAnimationListener(new Animation.AnimationListener() {
-
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                //Shows the second fab depending if we have tasks to remove
-                //WARNING .isVisible() is a hacked method, must re-add if updated
-                if (tasks.hasCompletedTasks() && fab_add.isVisible()) {
-                    fab_remove.show();
-                } else {
-                    fab_remove.hide();
-                }
-
-                adapter.notifyDataSetChanged();
-
-                //Sorts the task, then plays the animation for the new one
-                findViewByIndex(tasks.indexOf(ti), (ListView) findViewById(R.id.listview)).startAnimation(fade_in);
-            }
-        });
-
         View current = findViewByIndex(tasks.indexOf(ti), (ListView) findViewById(R.id.listview));
 
+        /*
         WindowManager.LayoutParams windowParams = new WindowManager.LayoutParams();
 
         //Getting the height of the statusbar
@@ -232,20 +200,62 @@ public class MainActivity extends ActionBarActivity{
         mWindowManager.addView(hooveredView, windowParams);
 
         float startY = current.getTop() + findViewById(R.id.toolbar).getHeight() - titleBarHeight;
+        */
 
-        ExpandAnimation expandAni = new ExpandAnimation(current, 500);
+        //View wrapper = this.findViewById(R.id.listwrapper);
 
-        tasks.get(index).toggleChecked();
-        int newIndex = tasks.sort(tasks.get(index));
-        adapter.notifyDataSetChanged();
-        //current.startAnimation(expandAni);
+        View wrapper = current.findViewById(R.id.listwrapper);
+        ExpandAnimation expandAni = new ExpandAnimation(wrapper, 500);
 
-        View newView = findViewByIndex(tasks.indexOf(ti), (ListView) findViewById(R.id.listview));
-        float endY = newView.getTop() + findViewById(R.id.toolbar).getHeight() - titleBarHeight;
+        expandAni.setAnimationListener(new Animation.AnimationListener() {
 
-        //current.startAnimation(fade_out);
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
 
-        fadeIn(hooveredView, startY, endY, windowParams, mWindowManager);
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                tasks.remove(ti);
+                System.out.println("End!");
+                //adapter.notifyDataSetChanged();
+            }
+        });
+
+        System.out.println(oldIndex + " " + ((ListView) findViewById(R.id.listview)).getChildCount());
+
+        //If it's the last item in the list, we don't need to animate it
+        if(oldIndex != ((ListView) findViewById(R.id.listview)).getChildCount() - 1) {
+            wrapper.startAnimation(expandAni);
+        } else {
+            tasks.remove(ti);
+        }
+
+        //findViewById(R.id.listitem).startAnimation(fade_out);
+
+        //Shows the second fab depending if we have tasks to remove
+        //WARNING .isVisible() is a hacked method, must re-add if updated
+        if (tasks.hasCompletedTasks() && fab_add.isVisible()) {
+            fab_remove.show();
+        } else {
+            fab_remove.hide();
+        }
+
+        View newView = findViewByIndex(tasks.indexOf(newTask), (ListView) findViewById(R.id.listview));
+
+        //float endY = newView.getTop() + findViewById(R.id.toolbar).getHeight() - titleBarHeight;
+
+        //newView.startAnimation(fade_out);
+        View wrapper2 = newView.findViewById(R.id.listwrapper);
+        wrapper2.setVisibility(View.GONE);
+        ExpandAnimation expandAni2 = new ExpandAnimation(wrapper2, 500);
+
+        wrapper2.startAnimation(expandAni2);
+
+        //fadeIn(hooveredView, startY, endY, windowParams, mWindowManager);
     }
 
     /*This will handle the first time call*/
@@ -266,11 +276,15 @@ public class MainActivity extends ActionBarActivity{
         float currentY = startY + ((timeNow - startTime)/300.0f) * (endY - startY);
 
         //If the animation has gone too far
-        if (Math.abs(currentY - startY) >= Math.abs(endY - startY)){
+
+        /*if (Math.abs(currentY - startY) >= Math.abs(endY - startY)){
             currentY = endY;
         }
 
         params.y = (int) currentY;
+        */
+
+        params.alpha = 0.0f;
 
         mWindowManager.updateViewLayout(notificationView, params);
         if (timeNow-startTime < 300){
@@ -575,7 +589,6 @@ public class MainActivity extends ActionBarActivity{
 
         final int firstListItemPosition = listView.getFirstVisiblePosition();
         final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
-
 
         if (index < firstListItemPosition || index > lastListItemPosition) {
             return listView.getAdapter().getView(index, null, listView);

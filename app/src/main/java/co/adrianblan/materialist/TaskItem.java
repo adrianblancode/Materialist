@@ -19,9 +19,15 @@ public class TaskItem {
     private boolean checked;
 
     public TaskItem(){
-        text = "";
-        color = null;
-        checked = false;
+        this.text = "";
+        this.color = null;
+        this.checked = false;
+    }
+
+    public TaskItem(TaskItem ti){
+        this.text = ti.getText();
+        this.color = ti.getColor();
+        this.checked = ti.getChecked();
     }
 
     static public TaskItem create(String serializedData) {

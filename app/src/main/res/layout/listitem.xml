@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/listitem"
     android:layout_width="fill_parent"
     android:layout_height="?android:attr/listPreferredItemHeight">
 
     <LinearLayout
         android:id="@+id/listwrapper"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="bottom"
+        android:padding="0dp"
+        android:clipToPadding="true"
+        android:clipChildren="true"
+        >
 
     <com.balysv.materialripple.MaterialRippleLayout
         android:id="@+id/listbuttonripple"
@@ -71,4 +76,4 @@
     </com.balysv.materialripple.MaterialRippleLayout>
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>
