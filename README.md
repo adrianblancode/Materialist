@@ -3,18 +3,11 @@ Materialist
 A task list for Android using Material Design.
 
 ## Features
-Do you often forget the things you shouldn't forget? Materialist is a minimalist app which helps with that. It organizes a list of your tasks according to priority, and is both fancy to look at and easy to use.
+Materialist is a minimalist todo list for managing your tasks. It's free, has no ads and uses Material Design.
+
+How is Materialist different from any other todo list? Many todo lists are either overly complicated or leave the user feeling without control. This app has been created to provide a simple, minimalist and intuitive experience that's in the way as little as possible.
 
 ## Images
-![Materialist image](http://i.imgur.com/NfsvvtQ.png)
+![Materialist image](http://i.imgur.com/ci9gPKc.png)
 
-
-## Alpha
-
-Materialist is in open alpha, if you wish to join you can follow these three steps: 
-
-1. Join the [Google+ Materialist community](https://plus.google.com/u/0/communities/100792283162999583978)
-2. [Opt in to the alpha](https://play.google.com/apps/testing/co.adrianblan.materialist)
 3. [Download from Google Play](https://play.google.com/store/apps/details?id=co.adrianblan.materialist)
-
-Keep in mind that this is not a finished product and a lot will change over time.
