@@ -10,4 +10,21 @@
         <!-- No translucent status bar -->
         <item name="android:windowTranslucentStatus">false</item>
     </style>
+
+    <style name="UndoBar" parent="@style/UndoBarMaterialStyle">
+        <item name="buttonStyle">@style/UndoBarButton</item>
+        <item name="messageStyle">@style/UndoBarMessage</item>
+    </style>
+
+    <style name="UndoBarMessage" parent="@style/UndoBarMessageMaterial">
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="UndoBarButton" parent="@style/UndoBarButtonMaterial">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
 </resources>

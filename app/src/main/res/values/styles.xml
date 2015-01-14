@@ -8,12 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
-
         <item name="undoBarStyle">@style/UndoBar</item>
-
-        <!-- Colored status bar for KitKat -->
-        <item name="android:windowTranslucentStatus" tools:targetApi="19">@color/colorPrimaryDark</item>
-        <!--item name="android:fitsSystemWindows" tools:targetApi="19">true</item-->
     </style>
 
     <!-- Style for the snack bar -->
@@ -29,7 +24,6 @@
     <style name="UndoBarButton" parent="@style/UndoBarButtonMaterial">
         <item name="android:textSize">15sp</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:fontFamily" tools:ignore="NewApi">sans-serif-medium</item>
         <item name="android:textColor">@color/colorPrimary</item>
     </style>
 

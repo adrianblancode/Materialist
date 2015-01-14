@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.PixelFormat;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,20 +13,12 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
-import android.view.animation.ScaleAnimation;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -142,7 +132,7 @@ public class MainActivity extends ActionBarActivity{
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             SystemBarTintManager tintManager = new SystemBarTintManager(this);
             tintManager.setStatusBarTintEnabled(true);
-            tintManager.setStatusBarTintColor(getResources().getColor(R.color.colorPrimaryDark));
+            tintManager.setStatusBarTintColor(getResources().getColor(R.color.colorPrimary));
         }
     }
 
@@ -333,7 +323,7 @@ public class MainActivity extends ActionBarActivity{
         //Removes all completed tasks and notifies the view
         removed = tasks.getCompletedTasks();
 
-        final Animation fade_out = AnimationUtils.loadAnimation(this, R.anim.scale_down);
+        final Animation fade_out = AnimationUtils.loadAnimation(this, R.anim.fade_out);
         fade_out.setAnimationListener(new Animation.AnimationListener() {
 
             @Override
@@ -448,7 +438,8 @@ public class MainActivity extends ActionBarActivity{
         RadioGroup taskPriority;
 
         taskTitle = "";
-        checkedColor = null;
+        checkedColor = TaskItem.Color.BLUE;
+        final Context ct = this;
 
         //Creates a dialog for adding a new task
         MaterialDialog dialog = new MaterialDialog.Builder(this)
@@ -463,12 +454,22 @@ public class MainActivity extends ActionBarActivity{
                 public void onPositive(MaterialDialog dialog) {
 
                     //Creating a new TaskItem for the task
-                    TaskItem li = new TaskItem();
+                    final TaskItem li = new TaskItem();
                     li.setText(taskTitle);
                     li.setColor(checkedColor);
                     li.setChecked(false);
+
                     tasks.insert(li);
                     adapter.notifyDataSetChanged();
+
+                    View v = findViewByIndex(tasks.indexOf(li), (ListView) findViewById(R.id.listview));
+
+                    //Fade in the animation fancily when added
+                    final Animation fade_in = AnimationUtils.loadAnimation(ct, R.anim.fade_in);
+
+                    if(v != null) {
+                        v.startAnimation(fade_in);
+                    }
                 }
             })
             .build();
@@ -494,7 +495,7 @@ public class MainActivity extends ActionBarActivity{
         });
 
         //If we set a priority and the task has a name, enable positive button
-        taskPriority = (RadioGroup) dialog.getCustomView().findViewById(R.id.task_importance);
+        taskPriority = (RadioGroup) dialog.getCustomView().findViewById(R.id.task_priority);
         taskPriority.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             public void onCheckedChanged(RadioGroup taskPriority, int checkedId) {
 
@@ -503,11 +504,11 @@ public class MainActivity extends ActionBarActivity{
                 if (checkedRadioButton.isChecked()) {
 
                     //We save the color value of the radio button
-                    if(checkedId == R.id.task_importance_red){
+                    if(checkedId == R.id.task_priority_red){
                         checkedColor = TaskItem.Color.RED;
-                    } else if(checkedId == R.id.task_importance_blue){
+                    } else if(checkedId == R.id.task_priority_blue){
                         checkedColor = TaskItem.Color.BLUE;
-                    } else if(checkedId == R.id.task_importance_green){
+                    } else if(checkedId == R.id.task_priority_green){
                         checkedColor = TaskItem.Color.GREEN;
                     } else {
                         checkedColor = null;
@@ -595,15 +596,15 @@ public class MainActivity extends ActionBarActivity{
         });
 
         //If we set a priority and the task has a name, enable positive button
-        taskPriority = (RadioGroup) dialog.getCustomView().findViewById(R.id.task_importance);
+        taskPriority = (RadioGroup) dialog.getCustomView().findViewById(R.id.task_priority);
 
         //Set the color
         if(checkedColor == TaskItem.Color.RED) {
-            taskPriority.check(R.id.task_importance_red);
+            taskPriority.check(R.id.task_priority_red);
         } else if(checkedColor == TaskItem.Color.BLUE) {
-            taskPriority.check(R.id.task_importance_blue);
+            taskPriority.check(R.id.task_priority_blue);
         } else if(checkedColor == TaskItem.Color.GREEN) {
-            taskPriority.check(R.id.task_importance_green);
+            taskPriority.check(R.id.task_priority_green);
         }
 
         taskPriority.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -614,11 +615,11 @@ public class MainActivity extends ActionBarActivity{
                 if (checkedRadioButton.isChecked()) {
 
                     //We save the color value of the radio button
-                    if(checkedId == R.id.task_importance_red){
+                    if(checkedId == R.id.task_priority_red){
                         checkedColor = TaskItem.Color.RED;
-                    } else if(checkedId == R.id.task_importance_blue){
+                    } else if(checkedId == R.id.task_priority_blue){
                         checkedColor = TaskItem.Color.BLUE;
-                    } else if(checkedId == R.id.task_importance_green){
+                    } else if(checkedId == R.id.task_priority_green){
                         checkedColor = TaskItem.Color.GREEN;
                     } else {
                         checkedColor = null;

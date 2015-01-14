@@ -20,7 +20,7 @@ public class TaskItem {
 
     public TaskItem(){
         this.text = "";
-        this.color = null;
+        this.color = Color.BLUE;
         this.checked = false;
     }
 
