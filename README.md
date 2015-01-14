@@ -10,4 +10,4 @@ How is Materialist different from any other todo list? Many todo lists are eithe
 ## Images
 ![Materialist image](http://i.imgur.com/ci9gPKc.png)
 
-3. [Download from Google Play](https://play.google.com/store/apps/details?id=co.adrianblan.materialist)
+[Download from Google Play](https://play.google.com/store/apps/details?id=co.adrianblan.materialist)
