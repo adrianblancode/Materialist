@@ -394,12 +394,27 @@ public class MainActivity extends ActionBarActivity{
             }
         });
 
+        final Context ct = this;
+
         //Create a snackbar, when the undo button is pressed: re-add all removed tasks
         UndoBarController.UndoBar ub = new UndoBarController.UndoBar(this).message("Removed completed tasks").listener(new UndoBarController.AdvancedUndoListener() {
 
             public void onUndo(Parcelable p) {
+
                 tasks.insert(removed);
                 adapter.notifyDataSetChanged();
+
+                //Fade in the animation fancily when added
+                //DOES NOT WORK CORRECTLY
+                final Animation fade_in = AnimationUtils.loadAnimation(ct, R.anim.fade_in);
+
+                for(TaskItem li : removed) {
+                    View v = findViewByIndex(tasks.indexOf(li), (ListView) findViewById(R.id.listview));
+
+                    if (v != null) {
+                        v.startAnimation(fade_in);
+                    }
+                }
 
                 //We assume since the tasks will be restored as checked, we can reintroduce the remove FAB
                 fab_remove.show();

@@ -11,6 +11,7 @@
         <item name="android:windowTranslucentStatus">false</item>
     </style>
 
+    <!-- Style for the snack bar -->
     <style name="UndoBar" parent="@style/UndoBarMaterialStyle">
         <item name="buttonStyle">@style/UndoBarButton</item>
         <item name="messageStyle">@style/UndoBarMessage</item>
@@ -26,5 +27,4 @@
         <item name="android:textColor">@color/colorPrimary</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
-
 </resources>
