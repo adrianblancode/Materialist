@@ -201,69 +201,6 @@ public class MainActivity extends ActionBarActivity{
         } else {
             System.out.println("NULL, DO STUFF!");
         }
-
-        /*
-        WindowManager.LayoutParams windowParams = new WindowManager.LayoutParams();
-
-        //Getting the height of the statusbar
-        Rect rect = new Rect();
-        Window win = this.getWindow();
-        win.getDecorView().getWindowVisibleDisplayFrame(rect);
-        int statusBarHeight = rect.top;
-        int contentViewTop = win.findViewById(Window.ID_ANDROID_CONTENT).getTop();
-        int titleBarHeight = contentViewTop - statusBarHeight;
-
-        //Parameters so we can overlay our animation target over the item
-        windowParams.gravity = Gravity.TOP | Gravity.RIGHT;
-        windowParams.x = current.getLeft();
-        windowParams.y = current.getTop() + findViewById(R.id.toolbar).getHeight() - titleBarHeight;
-        windowParams.height = current.getHeight();
-        windowParams.width = current.getWidth();
-        windowParams.flags =
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                        | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-                        | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                        | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
-        windowParams.format = PixelFormat.TRANSLUCENT;
-        windowParams.windowAnimations = 0;
-
-        View hooveredView = cloneView(current);
-
-        // Add the hoovered view to the window manager, as a new view in the screen
-        final WindowManager mWindowManager = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
-        mWindowManager.addView(hooveredView, windowParams);
-
-        float startY = current.getTop() + findViewById(R.id.toolbar).getHeight() - titleBarHeight;
-        */
-
-        //View wrapper = this.findViewById(R.id.listwrapper);
-
-        /*
-        View wrapper = current.findViewById(R.id.listwrapper);
-        ExpandAnimation expandAni = new ExpandAnimation(wrapper, 500);
-
-        expandAni.setAnimationListener(new Animation.AnimationListener() {
-
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                tasks.remove(ti);
-                System.out.println("End!");
-                //adapter.notifyDataSetChanged();
-            }
-        });
-        */
-
-        //View newView = findViewByIndex(tasks.indexOf(newTask), (ListView) findViewById(R.id.listview));
-        //float endY = newView.getTop() + findViewById(R.id.toolbar).getHeight() - titleBarHeight;
-        //fadeIn(hooveredView, startY, endY, windowParams, mWindowManager);
     }
 
     /*This will handle the first time call*/
