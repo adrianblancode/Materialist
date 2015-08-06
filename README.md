@@ -1,5 +1,5 @@
-
-[Materialist](https://play.google.com/store/apps/details?id=co.adrianblan.materialist) ![Materialist Logo](http://i.imgur.com/6FdrEd8.png)
+![Materialist Logo](http://i.imgur.com/6FdrEd8.png)
+[Materialist](https://play.google.com/store/apps/details?id=co.adrianblan.materialist)
 ===========
 Materialist is a minimalist todo list for managing your tasks. It's free, has no ads and uses Material Design.
 
