@@ -1,4 +1,4 @@
-#Materialist
+# Materialist
 
 Materialist is a minimalist todo list for managing your tasks. It's free, has no ads and uses Material Design.
 
